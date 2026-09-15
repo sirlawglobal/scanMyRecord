@@ -5,6 +5,7 @@ import { connectToDatabase, hasValidMongoUri } from "@/lib/db/connection";
 import Project from "@/models/Project";
 import ProjectStatusBadge from "@/components/public/ProjectStatusBadge";
 import Reveal from "@/components/public/Reveal";
+import Counter from "@/components/public/Counter";
 
 type ProjectSummary = {
   _id: string;
@@ -151,7 +152,7 @@ export default async function HomePage() {
           {stats.map((stat, index) => (
             <Reveal key={stat.label} delay={index * 0.06}>
               <div className="rounded-2xl border border-slate-200 bg-white p-6 shadow-elevated">
-                <p className="font-display text-4xl font-semibold text-navy-900">{stat.value}</p>
+                <Counter value={stat.value} className="font-display text-4xl font-semibold text-navy-900" />
                 <p className="mt-2 text-sm text-slate-500">{stat.label}</p>
               </div>
             </Reveal>
