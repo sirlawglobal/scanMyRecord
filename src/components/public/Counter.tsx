@@ -5,7 +5,7 @@ import { useInView, useMotionValue, useSpring } from "framer-motion";
 
 export default function Counter({ value, className }: { value: number; className?: string }) {
   const ref = useRef<HTMLSpanElement>(null);
-  const isInView = useInView(ref, { once: true, margin: "-80px" });
+  const isInView = useInView(ref, { once: true, margin: "-80px 0px" });
   const motionValue = useMotionValue(0);
   const springValue = useSpring(motionValue, { damping: 30, stiffness: 90 });
 
