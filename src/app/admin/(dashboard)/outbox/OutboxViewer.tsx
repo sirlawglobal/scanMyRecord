@@ -23,6 +23,12 @@ type OutboxCounts = {
   failed: number;
 };
 
+type PreviewModalData = {
+  item: OutboxItem;
+  html: string;
+  text: string;
+};
+
 export function OutboxViewer() {
   const [items, setItems] = useState<OutboxItem[]>([]);
   const [counts, setCounts] = useState<OutboxCounts>({ total: 0, pending: 0, sent: 0, failed: 0 });
@@ -32,6 +38,13 @@ export function OutboxViewer() {
   const [retryingId, setRetryingId] = useState<string | null>(null);
   const [sweeping, setSweeping] = useState(false);
   const [sweepMessage, setSweepMessage] = useState<string | null>(null);
+  const [showConfigGuide, setShowConfigGuide] = useState(false);
+
+  // Email Preview Modal State
+  const [previewData, setPreviewData] = useState<PreviewModalData | null>(null);
+  const [previewLoading, setPreviewLoading] = useState(false);
+  const [previewTab, setPreviewTab] = useState<"visual" | "json">("visual");
+
   const [, startTransition] = useTransition();
 
   async function fetchOutbox() {
@@ -70,6 +83,21 @@ export function OutboxViewer() {
       console.error("Retry failed:", err);
     } finally {
       setRetryingId(null);
+    }
+  }
+
+  async function handleOpenPreview(id: string) {
+    try {
+      setPreviewLoading(true);
+      const res = await fetch(`/api/admin/outbox/${id}/preview`, { cache: "no-store" });
+      if (res.ok) {
+        const data = await res.json();
+        setPreviewData(data);
+      }
+    } catch (err) {
+      console.error("Failed to load email preview:", err);
+    } finally {
+      setPreviewLoading(false);
     }
   }
 
@@ -160,23 +188,63 @@ export function OutboxViewer() {
 
       {/* ── Mock Mode vs Live SMTP Info Banner ── */}
       {!isSmtpConfigured && (
-        <div className="rounded-2xl border border-amber-200 bg-amber-50/80 p-4 text-amber-900 shadow-sm">
-          <div className="flex items-start gap-3">
-            <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-amber-200 text-amber-800 text-xs font-bold">
-              i
-            </span>
-            <div className="text-xs space-y-1">
+        <div className="rounded-2xl border border-amber-300 bg-amber-50/90 p-5 text-amber-900 shadow-sm">
+          <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4">
+            <div className="flex items-start gap-3">
+              <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-amber-200 text-amber-900 text-sm font-bold">
+                ⚠️
+              </span>
+              <div className="text-xs space-y-1.5">
+                <p className="font-bold text-sm text-amber-950">
+                  Development / Mock Delivery Mode Active
+                </p>
+                <p className="text-amber-800 leading-relaxed">
+                  No SMTP credentials (<code className="bg-amber-200/60 px-1.5 py-0.5 rounded font-mono font-semibold">SMTP_HOST</code>, <code className="bg-amber-200/60 px-1.5 py-0.5 rounded font-mono font-semibold">SMTP_USER</code>, <code className="bg-amber-200/60 px-1.5 py-0.5 rounded font-mono font-semibold">SMTP_PASS</code>) are configured in your <code className="bg-amber-200/60 px-1.5 py-0.5 rounded font-mono font-semibold">.env</code>.
+                </p>
+                <p className="text-amber-700">
+                  All transactional emails are formatted, verified, queued in MongoDB, and logged safely. You can click <strong>&quot;Preview Email&quot;</strong> on any row below to view the exact HTML email!
+                </p>
+              </div>
+            </div>
+
+            <button
+              type="button"
+              onClick={() => setShowConfigGuide(!showConfigGuide)}
+              className="shrink-0 inline-flex items-center gap-1.5 rounded-xl border border-amber-400 bg-amber-100 px-3.5 py-2 text-xs font-bold text-amber-900 shadow-xs hover:bg-amber-200 transition"
+            >
+              {showConfigGuide ? "Hide Setup Guide" : "How to Enable Real Emails →"}
+            </button>
+          </div>
+
+          {/* Quick Setup Guide Drawer */}
+          {showConfigGuide && (
+            <div className="mt-4 border-t border-amber-200/80 pt-4 text-xs space-y-3">
               <p className="font-bold text-amber-950">
-                Development / Mock Delivery Mode Active
+                To send physical emails to your actual Gmail or inbox, add this to your <code className="bg-amber-200/60 px-1.5 py-0.5 rounded font-mono">.env</code> file:
               </p>
-              <p className="text-amber-800">
-                Live SMTP credentials (<code className="bg-amber-100 px-1 py-0.5 rounded font-mono font-semibold">SMTP_HOST</code>, <code className="bg-amber-100 px-1 py-0.5 rounded font-mono font-semibold">SMTP_USER</code>, <code className="bg-amber-100 px-1 py-0.5 rounded font-mono font-semibold">SMTP_PASS</code>) are not set in your <code className="bg-amber-100 px-1 py-0.5 rounded font-mono font-semibold">.env</code>.
-              </p>
-              <p className="text-amber-700">
-                Emails are generated, verified, logged to the terminal/server console, and saved as delivered in the database for testing without sending real physical emails. Add your SMTP provider credentials to deliver to real inboxes.
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div className="rounded-xl border border-amber-200 bg-white p-3.5 shadow-xs font-mono text-[11px] text-slate-800 space-y-1">
+                  <p className="font-sans font-bold text-slate-900 mb-1">Option 1: Gmail (Quickest)</p>
+                  <p>SMTP_HOST=smtp.gmail.com</p>
+                  <p>SMTP_PORT=587</p>
+                  <p>SMTP_USER=your-email@gmail.com</p>
+                  <p>SMTP_PASS=your-google-app-password</p>
+                  <p>SMTP_FROM=&quot;Scan My Record &lt;your-email@gmail.com&gt;&quot;</p>
+                </div>
+                <div className="rounded-xl border border-amber-200 bg-white p-3.5 shadow-xs font-mono text-[11px] text-slate-800 space-y-1">
+                  <p className="font-sans font-bold text-slate-900 mb-1">Option 2: Resend / Brevo (Free Tier)</p>
+                  <p>SMTP_HOST=smtp.resend.com</p>
+                  <p>SMTP_PORT=587</p>
+                  <p>SMTP_USER=resend</p>
+                  <p>SMTP_PASS=re_your_api_key</p>
+                  <p>SMTP_FROM=&quot;Scan My Record &lt;onboarding@resend.dev&gt;&quot;</p>
+                </div>
+              </div>
+              <p className="text-[11px] text-amber-800">
+                After saving <code className="bg-amber-200/60 px-1 py-0.5 rounded font-mono">.env</code>, restart the dev server (<code className="bg-amber-200/60 px-1 py-0.5 rounded font-mono">npm run dev</code>), then click <strong>&quot;Retry&quot;</strong> on any registration below to deliver the email immediately.
               </p>
             </div>
-          </div>
+          )}
         </div>
       )}
 
@@ -368,14 +436,28 @@ export function OutboxViewer() {
                     </td>
 
                     <td className="px-5 py-4 text-right">
-                      <button
-                        type="button"
-                        onClick={() => handleRetry(item._id)}
-                        disabled={retryingId === item._id}
-                        className="rounded-xl border border-slate-200 bg-white px-3 py-1.5 text-xs font-bold text-slate-700 shadow-sm transition hover:bg-slate-50 hover:text-navy-950 disabled:opacity-50"
-                      >
-                        {retryingId === item._id ? "Retrying..." : "Retry"}
-                      </button>
+                      <div className="flex items-center justify-end gap-2">
+                        <button
+                          type="button"
+                          onClick={() => handleOpenPreview(item._id)}
+                          className="inline-flex items-center gap-1.5 rounded-xl border border-slate-200 bg-white px-3 py-1.5 text-xs font-semibold text-slate-700 shadow-xs hover:bg-slate-50 hover:text-navy-950 transition"
+                        >
+                          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                            <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" />
+                            <circle cx="12" cy="12" r="3" />
+                          </svg>
+                          Preview
+                        </button>
+
+                        <button
+                          type="button"
+                          onClick={() => handleRetry(item._id)}
+                          disabled={retryingId === item._id}
+                          className="rounded-xl border border-slate-200 bg-white px-3 py-1.5 text-xs font-bold text-slate-700 shadow-xs transition hover:bg-slate-50 hover:text-navy-950 disabled:opacity-50"
+                        >
+                          {retryingId === item._id ? "Retrying..." : "Retry"}
+                        </button>
+                      </div>
                     </td>
                   </tr>
                 ))}
@@ -384,6 +466,110 @@ export function OutboxViewer() {
           </div>
         )}
       </div>
+
+      {/* ── Visual Email Preview Modal / Drawer ── */}
+      {previewData && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-xs p-4 sm:p-6">
+          <div className="relative flex h-[90vh] w-full max-w-3xl flex-col rounded-2xl bg-white shadow-2xl overflow-hidden animate-in fade-in zoom-in-95 duration-200">
+            {/* Modal Header */}
+            <div className="flex items-center justify-between border-b border-slate-200 bg-slate-50/80 px-6 py-4">
+              <div>
+                <div className="flex items-center gap-2">
+                  <span className="rounded-md bg-navy-950 px-2 py-0.5 text-[10px] font-bold text-white uppercase tracking-wider">
+                    {previewData.item.eventType}
+                  </span>
+                  <span className="font-mono text-xs font-bold text-gold-600">
+                    {String(previewData.item.payload?.reference || "")}
+                  </span>
+                </div>
+                <h3 className="mt-1 font-display text-base font-bold text-slate-900">
+                  {previewData.item.subject}
+                </h3>
+                <p className="text-xs text-slate-500">
+                  To: <span className="font-semibold text-slate-700">{previewData.item.recipient}</span>
+                </p>
+              </div>
+
+              <div className="flex items-center gap-2">
+                {/* Visual / JSON toggle */}
+                <div className="flex rounded-xl bg-slate-200 p-1">
+                  <button
+                    type="button"
+                    onClick={() => setPreviewTab("visual")}
+                    className={`rounded-lg px-3 py-1 text-xs font-bold transition ${
+                      previewTab === "visual" ? "bg-white text-navy-950 shadow-xs" : "text-slate-600"
+                    }`}
+                  >
+                    HTML Preview
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setPreviewTab("json")}
+                    className={`rounded-lg px-3 py-1 text-xs font-bold transition ${
+                      previewTab === "json" ? "bg-white text-navy-950 shadow-xs" : "text-slate-600"
+                    }`}
+                  >
+                    JSON Data
+                  </button>
+                </div>
+
+                <button
+                  type="button"
+                  onClick={() => setPreviewData(null)}
+                  className="rounded-xl p-2 text-slate-400 hover:bg-slate-200 hover:text-slate-700 transition"
+                >
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                    <line x1="18" y1="6" x2="6" y2="18" />
+                    <line x1="6" y1="6" x2="18" y2="18" />
+                  </svg>
+                </button>
+              </div>
+            </div>
+
+            {/* Modal Body */}
+            <div className="flex-1 overflow-y-auto bg-slate-100 p-6">
+              {previewTab === "visual" ? (
+                <div className="mx-auto max-w-xl overflow-hidden rounded-xl border border-slate-200 bg-white shadow-md">
+                  <div
+                    dangerouslySetInnerHTML={{ __html: previewData.html }}
+                    className="email-content-preview"
+                  />
+                </div>
+              ) : (
+                <pre className="rounded-xl border border-slate-300 bg-navy-950 p-4 font-mono text-xs text-gold-300 overflow-x-auto">
+                  {JSON.stringify(previewData.item, null, 2)}
+                </pre>
+              )}
+            </div>
+
+            {/* Modal Footer */}
+            <div className="flex items-center justify-between border-t border-slate-200 bg-white px-6 py-3.5 text-xs text-slate-500">
+              <span>
+                Status: <strong className="uppercase text-slate-800">{previewData.item.status}</strong> &bull; Attempts: {previewData.item.attempts}/5
+              </span>
+              <div className="flex items-center gap-2">
+                <button
+                  type="button"
+                  onClick={() => setPreviewData(null)}
+                  className="rounded-xl border border-slate-200 bg-white px-4 py-2 font-bold text-slate-700 hover:bg-slate-50 transition"
+                >
+                  Close
+                </button>
+                <button
+                  type="button"
+                  onClick={() => {
+                    handleRetry(previewData.item._id);
+                    setPreviewData(null);
+                  }}
+                  className="rounded-xl bg-navy-950 px-4 py-2 font-bold text-white shadow-sm hover:bg-navy-900 transition"
+                >
+                  Trigger Resend / Dispatch
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

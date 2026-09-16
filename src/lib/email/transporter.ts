@@ -15,21 +15,29 @@ export type SendEmailResult = {
 };
 
 let cachedTransporter: Transporter | null = null;
+let lastConfigKey = "";
 
 function getTransporter(): Transporter | null {
-  if (cachedTransporter) {
-    return cachedTransporter;
-  }
-
   const host = process.env.SMTP_HOST?.trim();
   const user = process.env.SMTP_USER?.trim();
-  const pass = process.env.SMTP_PASS?.trim();
+  let pass = process.env.SMTP_PASS?.trim();
   const port = Number(process.env.SMTP_PORT || 587);
 
   if (!host || !user || !pass) {
     return null; // Development / mock mode
   }
 
+  // Sanitize Google App Password if spaces are present (e.g. "aewn ngao vvrn tjaa")
+  if (host.includes("gmail") && pass.includes(" ")) {
+    pass = pass.replace(/\s+/g, "");
+  }
+
+  const currentConfigKey = `${host}:${port}:${user}:${pass}`;
+  if (cachedTransporter && lastConfigKey === currentConfigKey) {
+    return cachedTransporter;
+  }
+
+  lastConfigKey = currentConfigKey;
   cachedTransporter = nodemailer.createTransport({
     host,
     port,
@@ -37,6 +45,9 @@ function getTransporter(): Transporter | null {
     auth: {
       user,
       pass,
+    },
+    tls: {
+      rejectUnauthorized: false,
     },
   });
 
