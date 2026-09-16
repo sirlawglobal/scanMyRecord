@@ -16,7 +16,7 @@ export async function getPublicProfileConfig() {
     if (!politician) {
       return fallback;
     }
-
+    console.log(politician);
     return {
       slug: String(politician.slug || fallback.slug),
       name: String(politician.name || fallback.name),
