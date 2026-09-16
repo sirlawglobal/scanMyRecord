@@ -3,6 +3,7 @@ import { registrationSchema } from "@/lib/validation/registration.schema";
 import { connectToDatabase, hasValidMongoUri } from "@/lib/db/connection";
 import Programme from "@/models/Programme";
 import Registration from "@/models/Registration";
+import { queueOutboxEmail } from "@/services/outbox.service";
 
 export function generateRegistrationReference(year = new Date().getFullYear()) {
   const sequence = Math.floor(Math.random() * 900000) + 100000;
@@ -87,6 +88,26 @@ export async function createRegistration(
         email,
         phone,
         payload: rest,
+      });
+
+      // Persist to Outbox and trigger asynchronous non-blocking email dispatch
+      await queueOutboxEmail({
+        recipient: email,
+        eventType: "programme.registration",
+        payload: {
+          reference,
+          fullName,
+          email,
+          phone,
+          programmeTitle: programme.title,
+          programmeCategory: programme.category || "General",
+          programmeSlug: programme.slug,
+          politicianName: process.env.NEXT_PUBLIC_POLITICIAN_NAME || "Mr. Temple",
+          politicianOffice: process.env.NEXT_PUBLIC_POLITICIAN_OFFICE || "Governor of the state",
+          politicianConstituency: process.env.NEXT_PUBLIC_POLITICIAN_CONSTITUENCY || "Ife East Federal Constituency",
+        },
+      }).catch((err) => {
+        console.error("Outbox queueing warning:", err);
       });
 
       return { ok: true, reference };
