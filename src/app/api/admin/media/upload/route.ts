@@ -32,8 +32,39 @@ export async function POST(request: Request) {
 
   try {
     const buffer = Buffer.from(await file.arrayBuffer());
-    const { url } = await uploadImage(buffer, file.name);
 
+    // Try Cloudinary first if configured
+    if (
+      process.env.CLOUDINARY_CLOUD_NAME?.trim() &&
+      process.env.CLOUDINARY_API_KEY?.trim() &&
+      process.env.CLOUDINARY_API_SECRET?.trim()
+    ) {
+      try {
+        const { url } = await uploadImage(buffer, file.name);
+        return NextResponse.json({ url }, { status: 201 });
+      } catch {
+        // Fall back to local storage if Cloudinary fails
+      }
+    }
+
+    // Local filesystem storage fallback in /public/uploads/
+    const fs = await import("node:fs/promises");
+    const path = await import("node:path");
+    const uploadsDir = path.join(process.cwd(), "public", "uploads");
+
+    await fs.mkdir(uploadsDir, { recursive: true });
+
+    const ext = path.extname(file.name) || ".jpg";
+    const safeBaseName = path
+      .basename(file.name, ext)
+      .replace(/[^a-zA-Z0-9_-]/g, "_")
+      .substring(0, 30);
+    const fileName = `${Date.now()}_${safeBaseName}${ext}`;
+    const filePath = path.join(uploadsDir, fileName);
+
+    await fs.writeFile(filePath, buffer);
+
+    const url = `/uploads/${fileName}`;
     return NextResponse.json({ url }, { status: 201 });
   } catch (error) {
     const message = error instanceof Error ? error.message : "Failed to upload image.";

@@ -46,6 +46,12 @@ export async function PATCH(request: Request) {
       details: body,
     }).catch(() => {});
 
+    try {
+      const { revalidatePath } = await import("next/cache");
+      revalidatePath("/");
+      revalidatePath("/admin/profile");
+    } catch {}
+
     return NextResponse.json(updated);
   } catch {
     return NextResponse.json({ message: "Failed to update profile." }, { status: 500 });

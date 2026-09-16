@@ -60,6 +60,9 @@ function estimateYearsOfService(servicePeriod: string, projectYears: number[]) {
   return 0;
 }
 
+export const dynamic = "force-dynamic";
+export const revalidate = 0;
+
 export default async function HomePage() {
   const [profile, projects, programmes, campaigns] = await Promise.all([
     getPublicProfileConfig(),
@@ -77,16 +80,17 @@ export default async function HomePage() {
   );
 
   const stats = [
-    { label: "Projects delivered", value: completedCount, icon: "🏗️" },
-    { label: "Ongoing projects", value: ongoingCount, icon: "⚙️" },
-    { label: "Communities served", value: communityCount, icon: "🏘️" },
-    { label: "Years of service", value: yearsOfService, icon: "📅" },
+    { label: "Projects delivered", value: completedCount, icon: "🏗️", detail: "Completed works" },
+    { label: "Ongoing projects", value: ongoingCount, icon: "⚙️", detail: "Active in field" },
+    { label: "Communities served", value: communityCount, icon: "🏘️", detail: "Wards reached" },
+    { label: "Years of service", value: yearsOfService, icon: "📅", detail: "Documented record" },
   ];
 
   const recordPreview = projects.slice(0, 6);
   const heroImage =
     profile.profileImage ||
-    projects.find((project) => project.images && project.images.length > 0)?.images[0];
+    projects.find((project) => project.images && project.images.length > 0)?.images[0] ||
+    "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?auto=format&fit=crop&w=1200&q=80";
 
   const timelineByYear = Object.entries(
     projects.reduce<Record<number, ProjectSummary[]>>((acc, project) => {
@@ -101,137 +105,258 @@ export default async function HomePage() {
   return (
     <main>
       {/* ──────────────────────────────────────────────────────────────
-          HERO — cinematic full-bleed dark section
+          HERO — Cinematic Full-Bleed Dark Section (Mobile-First + Desktop)
       ────────────────────────────────────────────────────────────── */}
       <section id="about" className="relative overflow-hidden bg-navy-950 noise-layer">
-        {/* Layered ambient gradients */}
+        {/* Layered ambient light cones */}
         <div className="pointer-events-none absolute inset-0">
-          <div className="absolute inset-0 bg-[radial-gradient(ellipse_80%_60%_at_10%_20%,rgba(192,138,38,0.18),transparent)]" />
-          <div className="absolute inset-0 bg-[radial-gradient(ellipse_50%_50%_at_90%_10%,rgba(58,82,160,0.25),transparent)]" />
-          <div className="absolute bottom-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-gold-400/30 to-transparent" />
+          <div className="absolute inset-0 bg-[radial-gradient(ellipse_80%_60%_at_50%_0%,rgba(192,138,38,0.22),transparent_70%)]" />
+          <div className="absolute inset-0 bg-[radial-gradient(ellipse_60%_50%_at_100%_40%,rgba(58,82,160,0.2),transparent_60%)]" />
+          <div className="absolute bottom-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-gold-400/40 to-transparent" />
         </div>
 
-        <div className="relative mx-auto grid max-w-7xl gap-10 px-4 py-20 sm:px-6 lg:grid-cols-[1.1fr_0.9fr] lg:gap-16 lg:px-8 lg:py-32">
-          {/* ── Left column ── */}
-          <div className="flex flex-col justify-center space-y-8">
-            {/* Eyebrow badge */}
+        <div className="relative mx-auto max-w-7xl px-4 py-12 sm:px-6 lg:px-8 lg:py-28">
+          {/* ══════════════════════════════════════════════════════════
+              MOBILE HERO VIEW (< lg) — High-Impact Mobile Showcase
+          ══════════════════════════════════════════════════════════ */}
+          <div className="flex flex-col items-center text-center lg:hidden space-y-6">
+            {/* Top Eyebrow Badge */}
             <Reveal>
-              <div className="inline-flex w-fit items-center gap-2 rounded-full border border-gold-400/25 bg-gold-400/8 px-4 py-2 text-[11px] font-bold uppercase tracking-[0.25em] text-gold-300">
-                <span className="h-1.5 w-1.5 animate-pulse rounded-full bg-gold-400" />
-                Public accountability record
+              <div className="inline-flex items-center gap-2 rounded-full border border-gold-400/30 bg-gold-400/10 px-3.5 py-1.5 text-[10px] font-bold uppercase tracking-[0.22em] text-gold-300 backdrop-blur-md shadow-lg shadow-gold-500/10">
+                <span className="h-2 w-2 animate-ping rounded-full bg-emerald-400" />
+                <span>Citizen Accountability Record</span>
               </div>
             </Reveal>
 
-            {/* Name + position */}
+            {/* Prominent Official Portrait Avatar with Luxury Gold Halo */}
             <Reveal delay={0.05}>
-              <div className="space-y-3">
-                <h1 className="font-display text-5xl font-semibold leading-[1.05] tracking-tight text-white sm:text-6xl lg:text-7xl">
+              <div className="relative mx-auto mt-2">
+                {/* Glow ring aura */}
+                <div className="absolute -inset-4 rounded-full bg-gradient-to-tr from-gold-400/30 via-amber-500/20 to-blue-600/30 blur-2xl" />
+
+                {/* Portrait container */}
+                <div className="relative h-44 w-44 sm:h-52 sm:w-52 rounded-full p-1.5 bg-gradient-to-b from-gold-400 via-amber-600 to-navy-800 shadow-2xl shadow-black/80">
+                  <div className="h-full w-full overflow-hidden rounded-full border-2 border-navy-950 bg-navy-900">
+                    {/* eslint-disable-next-line @next/next/no-img-element */}
+                    <img
+                      src={heroImage}
+                      alt={profile.name}
+                      className="h-full w-full object-cover object-top"
+                    />
+                  </div>
+                </div>
+
+                {/* Floating Verified Badge */}
+                <div className="absolute -bottom-2 left-1/2 -translate-x-1/2 whitespace-nowrap rounded-full border border-emerald-400/40 bg-navy-950/95 px-3.5 py-1 text-[11px] font-bold text-emerald-400 shadow-xl backdrop-blur-md flex items-center gap-1.5">
+                  <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" className="text-emerald-400">
+                    <polyline points="20 6 9 17 4 12" />
+                  </svg>
+                  <span>Verified Public Record</span>
+                </div>
+              </div>
+            </Reveal>
+
+            {/* Name + Elected Office */}
+            <Reveal delay={0.1}>
+              <div className="space-y-2 pt-2">
+                <h1 className="font-display text-4xl sm:text-5xl font-bold tracking-tight text-white">
                   {profile.name}
                 </h1>
-                <p className="text-lg font-medium text-slate-300">{profile.office}</p>
-                <p className="flex items-center gap-2 text-sm uppercase tracking-[0.22em] text-slate-500">
-                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="shrink-0 text-gold-400/70">
+                <p className="text-base sm:text-lg font-semibold text-gold-300">
+                  {profile.office}
+                </p>
+                <div className="inline-flex items-center gap-1.5 rounded-full bg-white/[0.06] border border-white/10 px-3.5 py-1 text-xs text-slate-300 font-medium">
+                  <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" className="text-gold-400">
                     <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z" />
                     <circle cx="12" cy="10" r="3" />
                   </svg>
-                  {profile.constituency}
-                </p>
+                  <span>{profile.constituency}</span>
+                </div>
               </div>
             </Reveal>
 
-            {/* Tagline */}
-            <Reveal delay={0.1}>
-              <p className="max-w-xl text-base leading-8 text-slate-400 sm:text-lg">
-                {profile.tagline}
-              </p>
-            </Reveal>
+            {/* Mission Statement / Tagline */}
+            {profile.tagline && (
+              <Reveal delay={0.14}>
+                <div className="mx-auto max-w-md rounded-2xl border border-white/[0.08] bg-white/[0.04] p-4 text-xs sm:text-sm text-slate-300 leading-relaxed backdrop-blur-sm shadow-inner">
+                  &ldquo;{profile.tagline}&rdquo;
+                </div>
+              </Reveal>
+            )}
 
-            {/* CTAs */}
-            <Reveal delay={0.14}>
-              <div className="flex flex-wrap gap-3 pt-1">
+            {/* Mobile CTAs (Full Width Stack) */}
+            <Reveal delay={0.18} className="w-full max-w-sm pt-1">
+              <div className="flex flex-col gap-3">
                 <Link
                   href="#projects"
-                  className="group inline-flex items-center gap-2 rounded-full bg-gradient-to-r from-gold-500 to-gold-400 px-7 py-3.5 text-sm font-bold text-navy-950 shadow-lg shadow-gold-500/30 transition-all hover:from-gold-400 hover:to-gold-300 hover:shadow-gold-400/40 hover:-translate-y-0.5"
+                  className="group flex w-full items-center justify-center gap-2 rounded-full bg-gradient-to-r from-gold-500 via-gold-400 to-amber-400 px-6 py-3.5 text-sm font-bold text-navy-950 shadow-xl shadow-gold-500/25 transition active:scale-95"
                 >
-                  View the record
-                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className="transition-transform group-hover:translate-x-1">
+                  <span>View Four-Year Record</span>
+                  <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" className="transition-transform group-hover:translate-x-1">
                     <path d="M5 12h14M12 5l7 7-7 7" />
                   </svg>
                 </Link>
                 <Link
                   href="/programmes"
-                  className="inline-flex items-center gap-2 rounded-full border border-white/15 bg-white/[0.06] px-7 py-3.5 text-sm font-semibold text-white transition hover:border-white/30 hover:bg-white/[0.1] hover:-translate-y-0.5"
+                  className="flex w-full items-center justify-center gap-2 rounded-full border border-white/20 bg-white/[0.08] px-6 py-3 text-sm font-semibold text-white transition hover:bg-white/[0.15] active:scale-95"
                 >
-                  Community programmes
+                  <span>Community Programmes</span>
                 </Link>
               </div>
             </Reveal>
 
-            {/* Stat counters */}
-            <Reveal delay={0.18}>
-              <div className="grid grid-cols-2 gap-4 pt-2 sm:grid-cols-4">
-                {stats.map((stat, index) => (
+            {/* Mobile 2x2 Impact Counter Grid */}
+            <Reveal delay={0.22} className="w-full pt-4">
+              <div className="grid grid-cols-2 gap-3 sm:gap-4 text-left">
+                {stats.map((stat) => (
                   <div
                     key={stat.label}
-                    className="flex flex-col gap-1 rounded-2xl border border-white/[0.06] bg-white/[0.04] p-4 backdrop-blur-sm"
+                    className="relative overflow-hidden rounded-2xl border border-white/[0.08] bg-gradient-to-b from-white/[0.08] to-white/[0.02] p-4 backdrop-blur-md shadow-lg"
                   >
-                    <Counter
-                      value={stat.value}
-                      className="font-display text-3xl font-semibold text-white sm:text-4xl"
-                    />
-                    <p className="text-[10px] font-semibold uppercase tracking-[0.18em] text-slate-500">
-                      {stat.label}
-                    </p>
+                    <div className="flex items-center justify-between">
+                      <span className="text-lg">{stat.icon}</span>
+                      <span className="text-[9px] font-bold uppercase tracking-wider text-gold-400/80">
+                        {stat.detail}
+                      </span>
+                    </div>
+                    <div className="mt-2">
+                      <Counter
+                        value={stat.value}
+                        className="font-display text-2xl sm:text-3xl font-bold text-white tracking-tight"
+                      />
+                      <p className="mt-1 text-[10px] font-semibold uppercase tracking-[0.14em] text-slate-400">
+                        {stat.label}
+                      </p>
+                    </div>
                   </div>
                 ))}
               </div>
             </Reveal>
           </div>
 
-          {/* ── Right column — photo ── */}
-          <Reveal delay={0.08} className="relative flex items-center justify-center lg:justify-end">
-            {/* Decorative glow ring */}
-            <div className="absolute -inset-6 rounded-[3rem] bg-gradient-to-br from-gold-400/15 via-transparent to-navy-700/30 blur-3xl" />
+          {/* ══════════════════════════════════════════════════════════
+              DESKTOP HERO VIEW (lg:grid) — Executive Split Layout
+          ══════════════════════════════════════════════════════════ */}
+          <div className="hidden lg:grid lg:grid-cols-[1.1fr_0.9fr] lg:gap-16 items-center">
+            {/* ── Left column ── */}
+            <div className="flex flex-col justify-center space-y-8">
+              {/* Eyebrow badge */}
+              <Reveal>
+                <div className="inline-flex w-fit items-center gap-2 rounded-full border border-gold-400/25 bg-gold-400/8 px-4 py-2 text-[11px] font-bold uppercase tracking-[0.25em] text-gold-300">
+                  <span className="h-2 w-2 animate-pulse rounded-full bg-gold-400" />
+                  Public accountability record
+                </div>
+              </Reveal>
 
-            <div className="relative w-full max-w-sm lg:max-w-full">
-              {/* Gold corner accent */}
-              <div className="absolute -right-3 -top-3 h-20 w-20 rounded-tr-[2rem] border-r-2 border-t-2 border-gold-400/40" />
-              <div className="absolute -bottom-3 -left-3 h-20 w-20 rounded-bl-[2rem] border-b-2 border-l-2 border-gold-400/20" />
-
-              <div className="relative aspect-[4/5] overflow-hidden rounded-[2.5rem] border border-white/[0.08] shadow-[0_32px_80px_-16px_rgba(0,0,0,0.6)]">
-                <img
-                  src={
-                    heroImage ||
-                    "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?auto=format&fit=crop&w=1200&q=80"
-                  }
-                  alt={profile.name}
-                  className="h-full w-full object-cover"
-                />
-                {/* Gradient overlay */}
-                <div className="absolute inset-0 bg-gradient-to-t from-navy-950/70 via-navy-950/10 to-transparent" />
-
-                {/* Floating info chip */}
-                <div className="absolute bottom-5 left-5 right-5 flex items-center gap-3 rounded-2xl border border-white/10 bg-navy-950/70 p-3.5 backdrop-blur-md">
-                  <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-gold-400/20 text-gold-300">
-                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-                      <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14" />
-                      <polyline points="22 4 12 14.01 9 11.01" />
+              {/* Name + position */}
+              <Reveal delay={0.05}>
+                <div className="space-y-3">
+                  <h1 className="font-display text-5xl font-semibold leading-[1.05] tracking-tight text-white xl:text-7xl">
+                    {profile.name}
+                  </h1>
+                  <p className="text-xl font-semibold text-gold-300">{profile.office}</p>
+                  <p className="flex items-center gap-2 text-sm uppercase tracking-[0.22em] text-slate-400">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="shrink-0 text-gold-400">
+                      <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z" />
+                      <circle cx="12" cy="10" r="3" />
                     </svg>
-                  </div>
-                  <div className="min-w-0">
-                    <p className="truncate text-xs font-semibold text-white">{profile.name}</p>
-                    <p className="truncate text-[10px] text-slate-400">{profile.office}</p>
-                  </div>
-                  <div className="ml-auto shrink-0">
-                    <span className="flex items-center gap-1 rounded-full bg-emerald-500/15 px-2.5 py-1 text-[10px] font-bold text-emerald-400">
-                      <span className="h-1 w-1 animate-pulse rounded-full bg-emerald-400" />
-                      Verified
-                    </span>
+                    {profile.constituency}
+                  </p>
+                </div>
+              </Reveal>
+
+              {/* Tagline */}
+              <Reveal delay={0.1}>
+                <p className="max-w-xl text-base leading-8 text-slate-300 sm:text-lg">
+                  {profile.tagline}
+                </p>
+              </Reveal>
+
+              {/* CTAs */}
+              <Reveal delay={0.14}>
+                <div className="flex flex-wrap gap-4 pt-1">
+                  <Link
+                    href="#projects"
+                    className="group inline-flex items-center gap-2 rounded-full bg-gradient-to-r from-gold-500 to-gold-400 px-7 py-3.5 text-sm font-bold text-navy-950 shadow-lg shadow-gold-500/30 transition-all hover:from-gold-400 hover:to-gold-300 hover:shadow-gold-400/40 hover:-translate-y-0.5"
+                  >
+                    View the record
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className="transition-transform group-hover:translate-x-1">
+                      <path d="M5 12h14M12 5l7 7-7 7" />
+                    </svg>
+                  </Link>
+                  <Link
+                    href="/programmes"
+                    className="inline-flex items-center gap-2 rounded-full border border-white/15 bg-white/[0.06] px-7 py-3.5 text-sm font-semibold text-white transition hover:border-white/30 hover:bg-white/[0.1] hover:-translate-y-0.5"
+                  >
+                    Community programmes
+                  </Link>
+                </div>
+              </Reveal>
+
+              {/* Stat counters */}
+              <Reveal delay={0.18}>
+                <div className="grid grid-cols-2 gap-4 pt-2 sm:grid-cols-4">
+                  {stats.map((stat) => (
+                    <div
+                      key={stat.label}
+                      className="flex flex-col gap-1 rounded-2xl border border-white/[0.06] bg-white/[0.04] p-4 backdrop-blur-sm"
+                    >
+                      <Counter
+                        value={stat.value}
+                        className="font-display text-3xl font-semibold text-white sm:text-4xl"
+                      />
+                      <p className="text-[10px] font-semibold uppercase tracking-[0.18em] text-slate-400">
+                        {stat.label}
+                      </p>
+                    </div>
+                  ))}
+                </div>
+              </Reveal>
+            </div>
+
+            {/* ── Right column — photo ── */}
+            <Reveal delay={0.08} className="relative flex items-center justify-end">
+              {/* Decorative glow ring */}
+              <div className="absolute -inset-6 rounded-[3rem] bg-gradient-to-br from-gold-400/15 via-transparent to-navy-700/30 blur-3xl" />
+
+              <div className="relative w-full max-w-md">
+                {/* Gold corner accents */}
+                <div className="absolute -right-3 -top-3 h-20 w-20 rounded-tr-[2rem] border-r-2 border-t-2 border-gold-400/50" />
+                <div className="absolute -bottom-3 -left-3 h-20 w-20 rounded-bl-[2rem] border-b-2 border-l-2 border-gold-400/30" />
+
+                <div className="relative aspect-[4/5] overflow-hidden rounded-[2.5rem] border border-white/[0.1] shadow-[0_32px_80px_-16px_rgba(0,0,0,0.7)] bg-navy-900">
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                  <img
+                    src={heroImage}
+                    alt={profile.name}
+                    className="h-full w-full object-cover object-top"
+                  />
+                  {/* Gradient overlay */}
+                  <div className="absolute inset-0 bg-gradient-to-t from-navy-950/80 via-navy-950/15 to-transparent" />
+
+                  {/* Floating info chip */}
+                  <div className="absolute bottom-5 left-5 right-5 flex items-center gap-3 rounded-2xl border border-white/10 bg-navy-950/80 p-3.5 backdrop-blur-md">
+                    <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-gold-400/20 text-gold-300">
+                      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                        <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14" />
+                        <polyline points="22 4 12 14.01 9 11.01" />
+                      </svg>
+                    </div>
+                    <div className="min-w-0">
+                      <p className="truncate text-xs font-semibold text-white">{profile.name}</p>
+                      <p className="truncate text-[10px] text-slate-400">{profile.office}</p>
+                    </div>
+                    <div className="ml-auto shrink-0">
+                      <span className="flex items-center gap-1 rounded-full bg-emerald-500/15 px-2.5 py-1 text-[10px] font-bold text-emerald-400">
+                        <span className="h-1.5 w-1.5 animate-pulse rounded-full bg-emerald-400" />
+                        Verified
+                      </span>
+                    </div>
                   </div>
                 </div>
               </div>
-            </div>
-          </Reveal>
+            </Reveal>
+          </div>
         </div>
       </section>
 
