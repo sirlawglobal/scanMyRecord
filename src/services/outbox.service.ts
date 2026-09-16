@@ -5,6 +5,10 @@ import {
   renderRegistrationConfirmationEmail,
   type RegistrationEmailPayload,
 } from "@/lib/email/templates/registration-confirmation";
+import {
+  renderDonationReceiptEmail,
+  type DonationReceiptEmailPayload,
+} from "@/lib/email/templates/donation-receipt";
 
 export type QueueEmailParams = {
   recipient: string;
@@ -100,6 +104,13 @@ export async function processOutboxJob(outboxId: string): Promise<boolean> {
     if (job.eventType === "programme.registration") {
       const rendered = renderRegistrationConfirmationEmail(
         job.payload as unknown as RegistrationEmailPayload,
+      );
+      renderedSubject = rendered.subject;
+      renderedHtml = rendered.html;
+      renderedText = rendered.text;
+    } else if (job.eventType === "donation.confirmation") {
+      const rendered = renderDonationReceiptEmail(
+        job.payload as unknown as DonationReceiptEmailPayload,
       );
       renderedSubject = rendered.subject;
       renderedHtml = rendered.html;

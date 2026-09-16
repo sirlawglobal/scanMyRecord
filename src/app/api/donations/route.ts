@@ -11,7 +11,8 @@ export async function POST(request: Request) {
     }
 
     return NextResponse.json({ reference: result.reference, authorizationUrl: result.authorizationUrl }, { status: 201 });
-  } catch {
-    return NextResponse.json({ message: "Something went wrong." }, { status: 500 });
+  } catch (error) {
+    const message = error instanceof Error ? error.message : "Something went wrong.";
+    return NextResponse.json({ message }, { status: 500 });
   }
 }

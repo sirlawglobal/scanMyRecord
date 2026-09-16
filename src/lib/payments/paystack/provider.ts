@@ -13,28 +13,12 @@ function getSecretKey() {
   return process.env.PAYSTACK_SECRET_KEY?.trim();
 }
 
-async function mockInitializePayment(params: InitializePaymentParams): Promise<PaymentInitResult> {
-  await new Promise((resolve) => setTimeout(resolve, 100));
-
-  return {
-    authorizationUrl: `https://example-paystack.com/checkout/${params.reference}?amount=${params.amount}&email=${encodeURIComponent(params.email)}&callback=${encodeURIComponent(params.callbackUrl ?? "/")}`,
-    accessCode: `access_${params.reference}`,
-    reference: params.reference,
-  };
-}
-
-async function mockVerifyPayment(reference: string): Promise<PaymentVerifyResult> {
-  await new Promise((resolve) => setTimeout(resolve, 100));
-
-  return { status: "success", reference, amount: 0, currency: "NGN" };
-}
-
 export const paystackProvider: IPaymentProvider = {
-  async initializePayment(params) {
+  async initializePayment(params: InitializePaymentParams): Promise<PaymentInitResult> {
     const secretKey = getSecretKey();
 
     if (!secretKey) {
-      return mockInitializePayment(params);
+      throw new Error("Paystack secret key is not configured. Please set PAYSTACK_SECRET_KEY in your .env file.");
     }
 
     const response = await fetch(`${PAYSTACK_BASE_URL}/transaction/initialize`, {
@@ -65,11 +49,11 @@ export const paystackProvider: IPaymentProvider = {
     };
   },
 
-  async verifyPayment(reference) {
+  async verifyPayment(reference: string): Promise<PaymentVerifyResult> {
     const secretKey = getSecretKey();
 
     if (!secretKey) {
-      return mockVerifyPayment(reference);
+      throw new Error("Paystack secret key is not configured. Please set PAYSTACK_SECRET_KEY in your .env file.");
     }
 
     const response = await fetch(`${PAYSTACK_BASE_URL}/transaction/verify/${encodeURIComponent(reference)}`, {
@@ -93,7 +77,7 @@ export const paystackProvider: IPaymentProvider = {
     };
   },
 
-  async handleWebhook(rawBody, signature): Promise<WebhookResult> {
+  async handleWebhook(rawBody: string, signature: string | null): Promise<WebhookResult> {
     const secretKey = getSecretKey();
 
     if (!secretKey || !signature) {
