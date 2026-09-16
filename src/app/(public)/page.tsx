@@ -131,6 +131,15 @@ export default async function HomePage() {
                 Community programmes
               </Link>
             </div>
+
+            <div className="grid grid-cols-2 gap-x-8 gap-y-5 pt-4 sm:grid-cols-4">
+              {stats.map((stat, index) => (
+                <Reveal key={stat.label} delay={index * 0.06} className="flex flex-col gap-1">
+                  <Counter value={stat.value} className="font-display text-3xl font-semibold text-white sm:text-4xl" />
+                  <p className="text-xs uppercase tracking-[0.18em] text-slate-400">{stat.label}</p>
+                </Reveal>
+              ))}
+            </div>
           </div>
 
           <div className="relative">
@@ -144,19 +153,6 @@ export default async function HomePage() {
               <div className="absolute inset-0 bg-gradient-to-t from-navy-950/60 via-transparent to-transparent" />
             </div>
           </div>
-        </div>
-      </section>
-
-      <section className="mx-auto max-w-7xl px-4 py-14 sm:px-6 lg:px-8">
-        <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
-          {stats.map((stat, index) => (
-            <Reveal key={stat.label} delay={index * 0.06}>
-              <div className="rounded-2xl border border-slate-200 bg-white p-6 shadow-elevated">
-                <Counter value={stat.value} className="font-display text-4xl font-semibold text-navy-900" />
-                <p className="mt-2 text-sm text-slate-500">{stat.label}</p>
-              </div>
-            </Reveal>
-          ))}
         </div>
       </section>
 
