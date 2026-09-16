@@ -6,6 +6,7 @@ const ProgrammeSchema = new Schema(
     title: { type: String, required: true },
     slug: { type: String, required: true, unique: true, index: true },
     description: { type: String, default: "" },
+    category: { type: String, default: "General", index: true },
     status: { type: String, enum: ["active", "paused", "closed"], default: "active", index: true },
     registrationOpen: { type: Boolean, default: true },
     capacity: { type: Number, default: null },

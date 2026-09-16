@@ -2,6 +2,7 @@ import Link from "next/link";
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 import { LogoutButton } from "./LogoutButton";
+import { AdminMobileNav } from "@/components/admin/AdminMobileNav";
 
 const navItems = [
   {
@@ -151,29 +152,8 @@ export default async function AdminLayout({ children }: { children: React.ReactN
 
         {/* ── Main content area ── */}
         <div className="flex w-full flex-col lg:pl-64">
-          {/* Mobile top bar */}
-          <header className="sticky top-0 z-10 flex items-center gap-3 border-b border-slate-200 bg-white/90 px-4 py-3 backdrop-blur-md lg:hidden">
-            <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-lg bg-gradient-to-br from-gold-400 to-gold-600">
-              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" className="text-navy-950">
-                <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" />
-              </svg>
-            </span>
-            <span className="font-display text-sm font-semibold text-navy-900">SMR Admin</span>
-
-            {/* Mobile nav scroll row */}
-            <nav className="ml-2 flex flex-1 items-center gap-1 overflow-x-auto">
-              {navItems.slice(0, 5).map((item) => (
-                <Link
-                  key={item.href}
-                  href={item.href}
-                  className="flex shrink-0 items-center gap-1.5 rounded-lg px-2.5 py-1.5 text-xs font-medium text-slate-600 transition hover:bg-slate-100 hover:text-navy-900"
-                >
-                  <span className="h-3.5 w-3.5">{item.icon}</span>
-                  {item.label}
-                </Link>
-              ))}
-            </nav>
-          </header>
+          {/* Mobile top bar with hamburger menu */}
+          <AdminMobileNav />
 
           {/* Page content */}
           <main className="flex-1 bg-slate-100 p-4 sm:p-6 lg:p-8">

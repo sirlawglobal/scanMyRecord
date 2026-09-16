@@ -3,6 +3,7 @@ import { getSession } from "@/lib/auth/session";
 import { redirect } from "next/navigation";
 import { connectToDatabase, hasValidMongoUri } from "@/lib/db/connection";
 import Project from "@/models/Project";
+import { DeleteActionButton } from "@/components/admin/DeleteActionButton";
 
 const STATUS_LABELS: Record<string, string> = {
   completed: "Completed",
@@ -50,28 +51,54 @@ export default async function AdminProjectsPage() {
                 <th className="px-5 py-4">Project</th>
                 <th className="px-5 py-4">Category</th>
                 <th className="px-5 py-4">Status</th>
+                <th className="px-5 py-4 text-right">Actions</th>
               </tr>
             </thead>
             <tbody>
-              {projects.map((project) => (
-                <tr key={String(project._id)} className="border-t border-slate-200">
-                  <td className="px-5 py-4 font-semibold text-slate-900">{project.title as string}</td>
-                  <td className="px-5 py-4">{project.category as string}</td>
-                  <td className="px-5 py-4">
-                    <span
-                      className={`rounded-full px-2.5 py-1 text-xs font-bold ${
-                        STATUS_CLASSES[project.status as string] ?? "bg-slate-200 text-slate-700"
-                      }`}
-                    >
-                      {STATUS_LABELS[project.status as string] ?? (project.status as string)}
-                    </span>
-                  </td>
-                </tr>
-              ))}
+              {projects.map((project) => {
+                const id = String(project._id);
+                return (
+                  <tr key={id} className="border-t border-slate-200 hover:bg-slate-50/60 transition">
+                    <td className="px-5 py-4 font-semibold text-slate-900">
+                      <Link href={`/admin/projects/${id}`} className="hover:text-gold-600 hover:underline">
+                        {project.title as string}
+                      </Link>
+                    </td>
+                    <td className="px-5 py-4">
+                      <span className="rounded-full bg-slate-100 px-2.5 py-1 text-xs font-medium text-slate-700">
+                        {project.category as string}
+                      </span>
+                    </td>
+                    <td className="px-5 py-4">
+                      <span
+                        className={`rounded-full px-2.5 py-1 text-xs font-bold ${
+                          STATUS_CLASSES[project.status as string] ?? "bg-slate-200 text-slate-700"
+                        }`}
+                      >
+                        {STATUS_LABELS[project.status as string] ?? (project.status as string)}
+                      </span>
+                    </td>
+                    <td className="px-5 py-4 text-right">
+                      <div className="flex items-center justify-end gap-3">
+                        <Link
+                          href={`/admin/projects/${id}`}
+                          className="text-xs font-semibold text-navy-900 hover:text-gold-600 hover:underline"
+                        >
+                          Edit
+                        </Link>
+                        <DeleteActionButton
+                          endpoint={`/api/admin/projects/${id}`}
+                          itemName="project"
+                        />
+                      </div>
+                    </td>
+                  </tr>
+                );
+              })}
 
               {projects.length === 0 ? (
                 <tr>
-                  <td colSpan={3} className="px-5 py-8 text-center text-sm text-slate-500">
+                  <td colSpan={4} className="px-5 py-8 text-center text-sm text-slate-500">
                     No projects yet. Create one above.
                   </td>
                 </tr>

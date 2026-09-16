@@ -84,7 +84,9 @@ export default async function HomePage() {
   ];
 
   const recordPreview = projects.slice(0, 6);
-  const heroImage = projects.find((project) => project.images.length > 0)?.images[0];
+  const heroImage =
+    profile.profileImage ||
+    projects.find((project) => project.images && project.images.length > 0)?.images[0];
 
   const timelineByYear = Object.entries(
     projects.reduce<Record<number, ProjectSummary[]>>((acc, project) => {

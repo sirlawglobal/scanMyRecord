@@ -21,6 +21,7 @@ export default function ProgrammeForm() {
     const body = {
       title: String(formData.get("title") ?? ""),
       description: String(formData.get("description") ?? ""),
+      category: String(formData.get("category") ?? "Youth Empowerment"),
       capacity: formData.get("capacity") ? String(formData.get("capacity")) : "",
       registrationDeadline: formData.get("registrationDeadline") ? String(formData.get("registrationDeadline")) : "",
       registrationOpen: formData.get("registrationOpen") === "on",
@@ -69,6 +70,26 @@ export default function ProgrammeForm() {
           className="mt-2 min-h-28 w-full rounded-xl border border-slate-200 px-3 py-2.5"
           placeholder="Describe the programme"
         />
+      </label>
+
+      <label className="block text-sm font-medium text-slate-700">
+        Target Focus Category
+        <select
+          name="category"
+          defaultValue="Youth Empowerment"
+          className="mt-2 w-full rounded-xl border border-slate-200 bg-white px-3 py-2.5 text-slate-800"
+        >
+          <option value="Youth Empowerment">Youth Empowerment</option>
+          <option value="Education & Scholarships">Education & Scholarships</option>
+          <option value="Healthcare & Wellness">Healthcare & Wellness</option>
+          <option value="Skill Acquisition">Skill Acquisition</option>
+          <option value="Agriculture & Food Security">Agriculture & Food Security</option>
+          <option value="Women Empowerment">Women Empowerment</option>
+          <option value="Community Welfare">Community Welfare</option>
+          <option value="Technology & Innovation">Technology & Innovation</option>
+          <option value="Infrastructure">Infrastructure</option>
+          <option value="General">General Community Support</option>
+        </select>
       </label>
 
       <div className="grid gap-5 md:grid-cols-2">

@@ -3,6 +3,7 @@ import { getSession } from "@/lib/auth/session";
 import { redirect } from "next/navigation";
 import { connectToDatabase, hasValidMongoUri } from "@/lib/db/connection";
 import FundraisingCampaign from "@/models/FundraisingCampaign";
+import { DeleteActionButton } from "@/components/admin/DeleteActionButton";
 
 type CampaignRow = {
   _id: string;
@@ -54,25 +55,26 @@ export default async function AdminFundraisingPage() {
                 <th className="px-5 py-4">Raised</th>
                 <th className="px-5 py-4">Target</th>
                 <th className="px-5 py-4">Status</th>
+                <th className="px-5 py-4 text-right">Actions</th>
               </tr>
             </thead>
             <tbody>
               {campaigns.length === 0 ? (
                 <tr>
-                  <td className="px-5 py-6 text-slate-500" colSpan={4}>
-                    No campaigns yet.
+                  <td className="px-5 py-8 text-center text-slate-500" colSpan={5}>
+                    No campaigns yet. Create one above.
                   </td>
                 </tr>
               ) : (
                 campaigns.map((campaign) => (
-                  <tr key={campaign._id} className="border-t border-slate-200">
+                  <tr key={campaign._id} className="border-t border-slate-200 hover:bg-slate-50/60 transition">
                     <td className="px-5 py-4 font-semibold text-slate-900">
-                      <Link href={`/admin/fundraising/${campaign._id}/donations`} className="hover:underline">
+                      <Link href={`/admin/fundraising/${campaign._id}/edit`} className="hover:text-gold-600 hover:underline">
                         {campaign.title}
                       </Link>
                     </td>
-                    <td className="px-5 py-4">₦{campaign.raisedAmount.toLocaleString()}</td>
-                    <td className="px-5 py-4">₦{campaign.targetAmount.toLocaleString()}</td>
+                    <td className="px-5 py-4 font-semibold text-emerald-600">₦{campaign.raisedAmount.toLocaleString()}</td>
+                    <td className="px-5 py-4 text-slate-600">₦{campaign.targetAmount.toLocaleString()}</td>
                     <td className="px-5 py-4">
                       <span
                         className={`rounded-full px-2.5 py-1 text-xs font-bold ${
@@ -85,6 +87,26 @@ export default async function AdminFundraisingPage() {
                       >
                         {campaign.status}
                       </span>
+                    </td>
+                    <td className="px-5 py-4 text-right">
+                      <div className="flex items-center justify-end gap-3">
+                        <Link
+                          href={`/admin/fundraising/${campaign._id}/donations`}
+                          className="text-xs font-semibold text-brand-600 hover:underline"
+                        >
+                          Donations
+                        </Link>
+                        <Link
+                          href={`/admin/fundraising/${campaign._id}/edit`}
+                          className="text-xs font-semibold text-navy-900 hover:text-gold-600 hover:underline"
+                        >
+                          Edit
+                        </Link>
+                        <DeleteActionButton
+                          endpoint={`/api/admin/fundraising/${campaign._id}`}
+                          itemName="campaign"
+                        />
+                      </div>
                     </td>
                   </tr>
                 ))

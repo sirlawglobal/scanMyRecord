@@ -4,6 +4,7 @@ export type PublicProfileConfig = {
   office: string;
   constituency: string;
   tagline: string;
+  profileImage?: string;
 };
 
 export function getDefaultPoliticianSlug() {
@@ -19,5 +20,6 @@ export function getPublicProfileFallback(): PublicProfileConfig {
     tagline:
       process.env.NEXT_PUBLIC_POLITICIAN_TAGLINE?.trim() ||
       "This public profile is waiting for your live content.",
+    profileImage: process.env.NEXT_PUBLIC_POLITICIAN_PROFILE_IMAGE?.trim() || "",
   };
 }

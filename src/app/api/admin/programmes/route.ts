@@ -28,6 +28,7 @@ export async function POST(request: Request) {
     }
 
     const description = typeof body?.description === "string" ? body.description : "";
+    const category = typeof body?.category === "string" && body.category.trim() ? body.category.trim() : "Youth Empowerment";
 
     const capacity =
       body?.capacity === "" || body?.capacity === null || body?.capacity === undefined
@@ -74,6 +75,7 @@ export async function POST(request: Request) {
       title,
       slug,
       description,
+      category,
       status: "active",
       registrationOpen,
       capacity,

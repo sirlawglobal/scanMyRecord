@@ -29,6 +29,17 @@ export default async function AdminProfilePage() {
           office={(politician?.office as string) ?? ""}
           bio={(politician?.bio as string) ?? ""}
           constituency={(politician?.constituency as string) ?? ""}
+          servicePeriod={(politician?.servicePeriod as string) ?? "2023 - 2027"}
+          profileImage={(politician?.profileImage as string) ?? ""}
+          socialLinks={
+            politician?.socialLinks
+              ? Object.fromEntries(
+                  politician.socialLinks instanceof Map
+                    ? politician.socialLinks
+                    : Object.entries(politician.socialLinks),
+                )
+              : {}
+          }
         />
       </div>
     </main>

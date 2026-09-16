@@ -5,10 +5,12 @@ import { redirect } from "next/navigation";
 import { connectToDatabase, hasValidMongoUri } from "@/lib/db/connection";
 import Programme from "@/models/Programme";
 import Registration from "@/models/Registration";
+import { DeleteActionButton } from "@/components/admin/DeleteActionButton";
 
 type ProgrammeDoc = {
   _id: unknown;
   title: string;
+  category?: string;
   status: "active" | "paused" | "closed";
   registrationOpen: boolean;
   registrationDeadline: Date | string | null;
@@ -76,9 +78,11 @@ export default async function AdminProgrammesPage() {
             <thead className="bg-slate-50 text-xs uppercase tracking-[0.18em] text-slate-500">
               <tr>
                 <th className="px-5 py-4">Programme</th>
+                <th className="px-5 py-4">Category</th>
                 <th className="px-5 py-4">Status</th>
                 <th className="px-5 py-4">Registrations</th>
                 <th className="px-5 py-4">Deadline</th>
+                <th className="px-5 py-4 text-right">Actions</th>
               </tr>
             </thead>
             <tbody>
@@ -87,20 +91,47 @@ export default async function AdminProgrammesPage() {
                 const id = String(programme._id);
 
                 return (
-                  <tr key={id} className="border-t border-slate-200">
+                  <tr key={id} className="border-t border-slate-200 hover:bg-slate-50/60 transition">
                     <td className="px-5 py-4 font-semibold text-slate-900">
-                      <Link href={`/admin/programmes/${id}/registrations`} className="hover:underline">
+                      <Link href={`/admin/programmes/${id}/edit`} className="hover:text-gold-600 hover:underline">
                         {programme.title}
                       </Link>
                     </td>
                     <td className="px-5 py-4">
+                      <span className="rounded-full bg-slate-100 px-2.5 py-1 text-xs font-medium text-slate-700">
+                        {programme.category || "General"}
+                      </span>
+                    </td>
+                    <td className="px-5 py-4">
                       <span className={`rounded-full px-2.5 py-1 text-xs font-bold ${statusClasses(label)}`}>{label}</span>
                     </td>
-                    <td className="px-5 py-4">{registrationCounts.get(id) ?? 0}</td>
                     <td className="px-5 py-4">
+                      <Link
+                        href={`/admin/programmes/${id}/registrations`}
+                        className="inline-flex items-center gap-1 font-semibold text-brand-600 hover:underline"
+                      >
+                        {registrationCounts.get(id) ?? 0}
+                        <span className="text-[10px] text-slate-400">entries</span>
+                      </Link>
+                    </td>
+                    <td className="px-5 py-4 text-slate-600">
                       {programme.registrationDeadline
                         ? format(new Date(programme.registrationDeadline), "d MMM yyyy")
                         : "No deadline"}
+                    </td>
+                    <td className="px-5 py-4 text-right">
+                      <div className="flex items-center justify-end gap-3">
+                        <Link
+                          href={`/admin/programmes/${id}/edit`}
+                          className="text-xs font-semibold text-navy-900 hover:text-gold-600 hover:underline"
+                        >
+                          Edit
+                        </Link>
+                        <DeleteActionButton
+                          endpoint={`/api/admin/programmes/${id}`}
+                          itemName="programme"
+                        />
+                      </div>
                     </td>
                   </tr>
                 );
@@ -108,8 +139,8 @@ export default async function AdminProgrammesPage() {
 
               {programmes.length === 0 && (
                 <tr>
-                  <td colSpan={4} className="px-5 py-8 text-center text-slate-500">
-                    No programmes yet.
+                  <td colSpan={6} className="px-5 py-8 text-center text-slate-500">
+                    No programmes yet. Create one above.
                   </td>
                 </tr>
               )}

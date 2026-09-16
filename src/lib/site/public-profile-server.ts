@@ -23,6 +23,7 @@ export async function getPublicProfileConfig() {
       office: String(politician.office || fallback.office),
       constituency: String(politician.constituency || fallback.constituency),
       tagline: String(politician.bio || fallback.tagline),
+      profileImage: String(politician.profileImage || fallback.profileImage || ""),
     };
   } catch {
     return fallback;

@@ -7,6 +7,7 @@ export type PublicProgramme = {
   title: string;
   slug: string;
   description: string;
+  category: string;
   status: string;
   registrationOpen: boolean;
   images: string[];
@@ -39,6 +40,7 @@ export async function getPublicProgrammeList(): Promise<PublicProgramme[]> {
       title: String(programme.title ?? "Untitled programme"),
       slug: String(programme.slug ?? ""),
       description: String(programme.description ?? ""),
+      category: String(programme.category ?? "General"),
       status: String(programme.status ?? "active"),
       registrationOpen: Boolean(programme.registrationOpen),
       images: Array.isArray(programme.images) ? programme.images.map((image: unknown) => String(image)) : [],
@@ -67,6 +69,7 @@ export async function getPublicProgrammeBySlug(slug: string): Promise<PublicProg
       title: String(programme.title ?? "Untitled programme"),
       slug: String(programme.slug ?? slug),
       description: String(programme.description ?? ""),
+      category: String(programme.category ?? "General"),
       status: String(programme.status ?? "active"),
       registrationOpen: Boolean(programme.registrationOpen),
       images: Array.isArray(programme.images) ? programme.images.map((image: unknown) => String(image)) : [],
