@@ -26,6 +26,7 @@ type OutboxCounts = {
 export function OutboxViewer() {
   const [items, setItems] = useState<OutboxItem[]>([]);
   const [counts, setCounts] = useState<OutboxCounts>({ total: 0, pending: 0, sent: 0, failed: 0 });
+  const [isSmtpConfigured, setIsSmtpConfigured] = useState<boolean>(true);
   const [loading, setLoading] = useState(true);
   const [filter, setFilter] = useState<"all" | "pending" | "sent" | "failed">("all");
   const [retryingId, setRetryingId] = useState<string | null>(null);
@@ -41,6 +42,7 @@ export function OutboxViewer() {
         const data = await res.json();
         setItems(data.outbox || []);
         setCounts(data.counts || { total: 0, pending: 0, sent: 0, failed: 0 });
+        setIsSmtpConfigured(Boolean(data.isSmtpConfigured));
       }
     } catch (err) {
       console.error("Failed to load outbox:", err);
@@ -155,6 +157,28 @@ export function OutboxViewer() {
           <p className="mt-1 text-xs text-rose-600/80">Retry attempts remaining</p>
         </div>
       </div>
+
+      {/* ── Mock Mode vs Live SMTP Info Banner ── */}
+      {!isSmtpConfigured && (
+        <div className="rounded-2xl border border-amber-200 bg-amber-50/80 p-4 text-amber-900 shadow-sm">
+          <div className="flex items-start gap-3">
+            <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-amber-200 text-amber-800 text-xs font-bold">
+              i
+            </span>
+            <div className="text-xs space-y-1">
+              <p className="font-bold text-amber-950">
+                Development / Mock Delivery Mode Active
+              </p>
+              <p className="text-amber-800">
+                Live SMTP credentials (<code className="bg-amber-100 px-1 py-0.5 rounded font-mono font-semibold">SMTP_HOST</code>, <code className="bg-amber-100 px-1 py-0.5 rounded font-mono font-semibold">SMTP_USER</code>, <code className="bg-amber-100 px-1 py-0.5 rounded font-mono font-semibold">SMTP_PASS</code>) are not set in your <code className="bg-amber-100 px-1 py-0.5 rounded font-mono font-semibold">.env</code>.
+              </p>
+              <p className="text-amber-700">
+                Emails are generated, verified, logged to the terminal/server console, and saved as delivered in the database for testing without sending real physical emails. Add your SMTP provider credentials to deliver to real inboxes.
+              </p>
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* ── Control Action Bar ── */}
       <div className="flex flex-col gap-4 rounded-2xl border border-slate-200 bg-white p-4 shadow-sm sm:flex-row sm:items-center sm:justify-between">

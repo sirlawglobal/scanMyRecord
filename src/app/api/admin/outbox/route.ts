@@ -24,8 +24,15 @@ export async function GET() {
     Outbox.countDocuments({}),
   ]);
 
+  const isSmtpConfigured = Boolean(
+    process.env.SMTP_HOST?.trim() &&
+    process.env.SMTP_USER?.trim() &&
+    process.env.SMTP_PASS?.trim()
+  );
+
   return NextResponse.json({
     outbox,
     counts: { total, pending, sent, failed },
+    isSmtpConfigured,
   });
 }
