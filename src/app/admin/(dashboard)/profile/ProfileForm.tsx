@@ -33,6 +33,7 @@ export function ProfileForm({
 
     setIsUploading(true);
     setError(null);
+    setSaved(false);
 
     const formData = new FormData();
     formData.append("file", file);
@@ -49,6 +50,22 @@ export function ProfileForm({
       }
 
       setImageUrl(data.url);
+
+      // Persist the photo immediately so it goes live without a separate
+      // "Save Profile" click — uploading is the action the admin expects
+      // to publish it.
+      const saveResponse = await fetch("/api/admin/politician", {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ profileImage: data.url }),
+      });
+
+      if (!saveResponse.ok) {
+        const saveData = await saveResponse.json().catch(() => ({}));
+        throw new Error(saveData?.message ?? "Photo uploaded but could not be published. Click Save Profile to retry.");
+      }
+
+      setSaved(true);
     } catch (err) {
       setError(err instanceof Error ? err.message : "Failed to upload image. You can paste an image URL instead.");
     } finally {
