@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { getSession } from "@/lib/auth/session";
 import { connectToDatabase } from "@/lib/db/connection";
 import FundraisingCampaign from "@/models/FundraisingCampaign";
+import Donation from "@/models/Donation";
 import AuditLog from "@/models/AuditLog";
 
 const ALLOWED_FIELDS = ["title", "description", "targetAmount", "status", "imageUrl"] as const;
@@ -69,6 +70,15 @@ export async function DELETE(_request: Request, { params }: { params: Promise<{ 
 
   try {
     await connectToDatabase();
+
+    const donationCount = await Donation.countDocuments({ campaignId: id });
+
+    if (donationCount > 0) {
+      return NextResponse.json(
+        { message: "This campaign has donation records and can't be deleted. Set its status to \"closed\" instead." },
+        { status: 409 },
+      );
+    }
 
     const deleted = await FundraisingCampaign.findByIdAndDelete(id).catch(() => null);
 
