@@ -37,7 +37,28 @@ export default async function AdminEditProjectPage({
     status: String(project.status ?? "proposed"),
     year: project.year ? Number(project.year) : undefined,
     location: String(project.location ?? ""),
-    images: Array.isArray(project.images) ? project.images.map((img: unknown) => String(img)) : [],
+    media:
+      Array.isArray(project.media) && project.media.length > 0
+        ? project.media.map((item: unknown) => {
+            const media = item as Record<string, unknown>;
+            return {
+              url: String(media.url ?? ""),
+              type: (media.type === "video" ? "video" : "image") as "image" | "video",
+              stage: (["before", "after"].includes(String(media.stage)) ? String(media.stage) : "general") as
+                | "before"
+                | "after"
+                | "general",
+              caption: String(media.caption ?? ""),
+            };
+          })
+        : Array.isArray(project.images)
+          ? project.images.map((img: unknown) => ({
+              url: String(img),
+              type: "image" as const,
+              stage: "general" as const,
+              caption: "",
+            }))
+          : [],
   };
 
   return (

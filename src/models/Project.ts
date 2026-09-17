@@ -1,5 +1,15 @@
 import mongoose, { Schema } from "mongoose";
 
+const ProjectMediaSchema = new Schema(
+  {
+    url: { type: String, required: true },
+    type: { type: String, enum: ["image", "video"], default: "image" },
+    stage: { type: String, enum: ["before", "after", "general"], default: "general" },
+    caption: { type: String, default: "" },
+  },
+  { _id: false },
+);
+
 const ProjectSchema = new Schema(
   {
     politicianId: { type: Schema.Types.ObjectId, ref: "Politician", required: true, index: true },
@@ -14,7 +24,10 @@ const ProjectSchema = new Schema(
       lat: Number,
       lng: Number,
     },
+    // Legacy flat gallery, kept for backward compatibility with existing
+    // records; new writes derive this from `media`. Prefer `media` for reads.
     images: [{ type: String }],
+    media: [ProjectMediaSchema],
     archived: { type: Boolean, default: false },
   },
   { timestamps: true },

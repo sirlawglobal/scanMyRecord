@@ -2,13 +2,13 @@
 
 import { useRouter } from "next/navigation";
 import { useState } from "react";
-import { ImageUploader } from "@/components/admin/ImageUploader";
+import { ProjectMediaManager, type ProjectMediaItem } from "@/components/admin/ProjectMediaManager";
 
 export function ProjectForm() {
   const router = useRouter();
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [images, setImages] = useState<string[]>([]);
+  const [media, setMedia] = useState<ProjectMediaItem[]>([]);
 
   async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -24,7 +24,7 @@ export function ProjectForm() {
       status: String(formData.get("status") ?? "").toLowerCase(),
       year: formData.get("year") ? Number(formData.get("year")) : undefined,
       location: String(formData.get("location") ?? "").trim(),
-      images,
+      media,
     };
 
     try {
@@ -121,9 +121,9 @@ export function ProjectForm() {
       </div>
 
       <div>
-        <span className="block text-sm font-medium text-slate-700">Images</span>
+        <span className="block text-sm font-medium text-slate-700">Media</span>
         <div className="mt-2">
-          <ImageUploader value={images} onChange={setImages} />
+          <ProjectMediaManager value={media} onChange={setMedia} />
         </div>
       </div>
 

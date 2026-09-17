@@ -13,6 +13,36 @@ function slugify(title: string) {
     .replace(/(^-|-$)/g, "");
 }
 
+type MediaItemInput = { url: string; type?: string; stage?: string; caption?: string };
+
+function normalizeMedia(media: unknown): MediaItemInput[] | null {
+  if (media === undefined) {
+    return [];
+  }
+
+  if (!Array.isArray(media)) {
+    return null;
+  }
+
+  const normalized: MediaItemInput[] = [];
+
+  for (const item of media) {
+    if (!item || typeof item !== "object" || typeof (item as { url?: unknown }).url !== "string") {
+      return null;
+    }
+
+    const record = item as Record<string, unknown>;
+    normalized.push({
+      url: record.url as string,
+      type: record.type === "video" ? "video" : "image",
+      stage: ["before", "after"].includes(String(record.stage)) ? (record.stage as string) : "general",
+      caption: typeof record.caption === "string" ? record.caption : "",
+    });
+  }
+
+  return normalized;
+}
+
 export async function POST(request: Request) {
   const session = await getSession();
 
@@ -22,7 +52,7 @@ export async function POST(request: Request) {
 
   try {
     const body = await request.json().catch(() => ({}));
-    const { title, summary, category, status, year, location, images } = body ?? {};
+    const { title, summary, category, status, year, location, media } = body ?? {};
 
     if (typeof title !== "string" || title.trim().length === 0) {
       return NextResponse.json({ message: "Title is required." }, { status: 400 });
@@ -32,8 +62,10 @@ export async function POST(request: Request) {
       return NextResponse.json({ message: "Category is required." }, { status: 400 });
     }
 
-    if (images !== undefined && (!Array.isArray(images) || !images.every((item) => typeof item === "string"))) {
-      return NextResponse.json({ message: "Images must be an array of URLs." }, { status: 400 });
+    const normalizedMedia = normalizeMedia(media);
+
+    if (normalizedMedia === null) {
+      return NextResponse.json({ message: "Media must be an array of { url, type, stage } items." }, { status: 400 });
     }
 
     await connectToDatabase();
@@ -58,7 +90,8 @@ export async function POST(request: Request) {
         status: status ?? "proposed",
         year: year !== undefined && year !== null && year !== "" ? Number(year) : undefined,
         location: location ?? "",
-        images: Array.isArray(images) ? images : [],
+        media: normalizedMedia,
+        images: normalizedMedia.filter((item) => item.type !== "video").map((item) => item.url),
       });
     } catch {
       return NextResponse.json({ message: "Failed to create project. Check the submitted fields." }, { status: 400 });

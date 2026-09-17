@@ -1,10 +1,29 @@
 import Link from "next/link";
 import type { Metadata } from "next";
 
-import { getPublicProjectBySlug } from "@/lib/site/projects";
+import { getPublicProjectBySlug, type ProjectMediaItem } from "@/lib/site/projects";
 import ProjectStatusBadge from "@/components/public/ProjectStatusBadge";
 import ShareButtons from "@/components/public/ShareButtons";
 import Reveal from "@/components/public/Reveal";
+import BeforeAfterSlider from "@/components/public/BeforeAfterSlider";
+
+function MediaTile({ item, title }: { item: ProjectMediaItem; title: string }) {
+  if (item.type === "video") {
+    return (
+      <video
+        src={item.url}
+        controls
+        playsInline
+        className="aspect-[4/3] w-full rounded-2xl bg-navy-950 object-cover shadow-elevated"
+      />
+    );
+  }
+
+  return (
+    // eslint-disable-next-line @next/next/no-img-element
+    <img src={item.url} alt={title} className="aspect-[4/3] w-full rounded-2xl object-cover shadow-elevated" />
+  );
+}
 
 type ProjectPageParams = { projectSlug: string };
 
@@ -74,6 +93,12 @@ export default async function ProjectDetailPage({
   const appUrl = getAppUrl();
   const pageUrl = `${appUrl}/projects/${project.slug}`;
 
+  const beforeItem = project.media.find((item) => item.type === "image" && item.stage === "before");
+  const afterItem = project.media.find((item) => item.type === "image" && item.stage === "after");
+  const hasComparison = Boolean(beforeItem && afterItem);
+  const usedUrls = new Set([beforeItem?.url, afterItem?.url].filter(Boolean));
+  const remainingMedia = project.media.filter((item) => !usedUrls.has(item.url));
+
   return (
     <main>
       <section className="mx-auto max-w-5xl px-4 py-16 sm:px-6 lg:px-8">
@@ -106,34 +131,32 @@ export default async function ProjectDetailPage({
           </p>
         </Reveal>
 
-        <Reveal delay={0.1} className="mt-10">
-          {project.images.length > 1 ? (
+        {hasComparison ? (
+          <Reveal delay={0.1} className="mt-10">
+            <h2 className="mb-3 font-display text-lg font-semibold text-navy-900">Drag to compare</h2>
+            <BeforeAfterSlider beforeUrl={beforeItem!.url} afterUrl={afterItem!.url} title={project.title} />
+          </Reveal>
+        ) : null}
+
+        <Reveal delay={hasComparison ? 0.15 : 0.1} className="mt-10">
+          {remainingMedia.length > 1 ? (
             <div className="grid grid-cols-2 gap-4 sm:grid-cols-3">
-              {project.images.map((image) => (
-                // eslint-disable-next-line @next/next/no-img-element
-                <img
-                  key={image}
-                  src={image}
-                  alt={project.title}
-                  className="aspect-[4/3] w-full rounded-2xl object-cover shadow-elevated"
-                />
+              {remainingMedia.map((item, index) => (
+                <MediaTile key={`${item.url}-${index}`} item={item} title={project.title} />
               ))}
             </div>
-          ) : project.images.length === 1 ? (
-            // eslint-disable-next-line @next/next/no-img-element
-            <img
-              src={project.images[0]}
-              alt={project.title}
-              className="aspect-[16/9] w-full rounded-3xl object-cover shadow-elevated"
-            />
-          ) : (
+          ) : remainingMedia.length === 1 ? (
+            <div className="mx-auto max-w-2xl">
+              <MediaTile item={remainingMedia[0]} title={project.title} />
+            </div>
+          ) : !hasComparison ? (
             <div className="flex aspect-[16/9] items-center justify-center rounded-3xl bg-gradient-to-br from-navy-900 to-navy-700 text-sm font-semibold uppercase tracking-[0.2em] text-white/60">
               {project.category || "No images available"}
             </div>
-          )}
+          ) : null}
         </Reveal>
 
-        <Reveal delay={0.15} className="mt-10 border-t border-slate-200 pt-8">
+        <Reveal delay={0.2} className="mt-10 border-t border-slate-200 pt-8">
           <h2 className="font-display text-xl font-semibold text-navy-900">Share this project</h2>
           <div className="mt-4">
             <ShareButtons url={pageUrl} title={project.title} />

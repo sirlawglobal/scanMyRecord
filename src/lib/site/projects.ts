@@ -1,6 +1,13 @@
 import { connectToDatabase, hasValidMongoUri } from "@/lib/db/connection";
 import Project from "@/models/Project";
 
+export type ProjectMediaItem = {
+  url: string;
+  type: "image" | "video";
+  stage: "before" | "after" | "general";
+  caption: string;
+};
+
 export type PublicProject = {
   _id: string;
   title: string;
@@ -11,8 +18,28 @@ export type PublicProject = {
   year: number;
   location: string;
   images: string[];
+  media: ProjectMediaItem[];
   createdAt?: Date | string;
 };
+
+function toMediaItems(project: Record<string, unknown>): ProjectMediaItem[] {
+  if (Array.isArray(project.media) && project.media.length > 0) {
+    return project.media.map((item) => {
+      const media = item as Record<string, unknown>;
+      return {
+        url: String(media.url ?? ""),
+        type: media.type === "video" ? "video" : "image",
+        stage: ["before", "after"].includes(String(media.stage)) ? (media.stage as "before" | "after") : "general",
+        caption: String(media.caption ?? ""),
+      };
+    });
+  }
+
+  // Back-compat: older records only have the flat `images` array.
+  return Array.isArray(project.images)
+    ? project.images.map((image) => ({ url: String(image), type: "image" as const, stage: "general" as const, caption: "" }))
+    : [];
+}
 
 export type ProjectStats = {
   completed: number;
@@ -29,6 +56,8 @@ type ProjectFilters = {
 };
 
 function toPublicProject(project: Record<string, unknown>): PublicProject {
+  const media = toMediaItems(project);
+
   return {
     _id: String(project._id),
     title: String(project.title ?? "Untitled project"),
@@ -40,7 +69,8 @@ function toPublicProject(project: Record<string, unknown>): PublicProject {
     category: String(project.category ?? ""),
     year: Number(project.year ?? 0),
     location: String(project.location ?? ""),
-    images: Array.isArray(project.images) ? project.images.map((image) => String(image)) : [],
+    images: media.filter((item) => item.type === "image").map((item) => item.url),
+    media,
     createdAt: (project.createdAt as Date | string | undefined) ?? new Date(),
   };
 }

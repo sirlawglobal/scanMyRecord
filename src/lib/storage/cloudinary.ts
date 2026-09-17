@@ -14,7 +14,11 @@ function getCloudinaryConfig() {
   return { cloudName, apiKey, apiSecret };
 }
 
-export async function uploadImage(file: Buffer, filename: string): Promise<{ url: string }> {
+async function uploadToCloudinary(
+  file: Buffer,
+  filename: string,
+  resourceType: "image" | "video",
+): Promise<{ url: string }> {
   const { cloudName, apiKey, apiSecret } = getCloudinaryConfig();
 
   const timestamp = Math.round(Date.now() / 1000);
@@ -29,7 +33,7 @@ export async function uploadImage(file: Buffer, filename: string): Promise<{ url
   formData.append("timestamp", String(timestamp));
   formData.append("signature", signature);
 
-  const response = await fetch(`https://api.cloudinary.com/v1_1/${cloudName}/image/upload`, {
+  const response = await fetch(`https://api.cloudinary.com/v1_1/${cloudName}/${resourceType}/upload`, {
     method: "POST",
     body: formData,
   });
@@ -37,8 +41,16 @@ export async function uploadImage(file: Buffer, filename: string): Promise<{ url
   const body = await response.json().catch(() => ({}));
 
   if (!response.ok || !body?.secure_url) {
-    throw new Error(body?.error?.message ?? "Failed to upload image to Cloudinary.");
+    throw new Error(body?.error?.message ?? `Failed to upload ${resourceType} to Cloudinary.`);
   }
 
   return { url: body.secure_url as string };
+}
+
+export async function uploadImage(file: Buffer, filename: string): Promise<{ url: string }> {
+  return uploadToCloudinary(file, filename, "image");
+}
+
+export async function uploadVideo(file: Buffer, filename: string): Promise<{ url: string }> {
+  return uploadToCloudinary(file, filename, "video");
 }

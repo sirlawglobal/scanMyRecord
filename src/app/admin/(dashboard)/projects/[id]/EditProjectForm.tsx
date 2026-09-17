@@ -2,7 +2,7 @@
 
 import { useRouter } from "next/navigation";
 import { useState } from "react";
-import { ImageUploader } from "@/components/admin/ImageUploader";
+import { ProjectMediaManager, type ProjectMediaItem } from "@/components/admin/ProjectMediaManager";
 import { DeleteActionButton } from "@/components/admin/DeleteActionButton";
 
 type ProjectData = {
@@ -13,7 +13,7 @@ type ProjectData = {
   status: string;
   year?: number;
   location: string;
-  images: string[];
+  media: ProjectMediaItem[];
 };
 
 export function EditProjectForm({ project }: { project: ProjectData }) {
@@ -21,7 +21,7 @@ export function EditProjectForm({ project }: { project: ProjectData }) {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [saved, setSaved] = useState(false);
-  const [images, setImages] = useState<string[]>(project.images || []);
+  const [media, setMedia] = useState<ProjectMediaItem[]>(project.media || []);
 
   async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -38,7 +38,7 @@ export function EditProjectForm({ project }: { project: ProjectData }) {
       status: String(formData.get("status") ?? "").toLowerCase(),
       year: formData.get("year") ? Number(formData.get("year")) : undefined,
       location: String(formData.get("location") ?? "").trim(),
-      images,
+      media,
     };
 
     try {
@@ -143,8 +143,8 @@ export function EditProjectForm({ project }: { project: ProjectData }) {
       </div>
 
       <div>
-        <span className="block text-sm font-medium text-slate-700 mb-2">Project Images</span>
-        <ImageUploader value={images} onChange={setImages} />
+        <span className="block text-sm font-medium text-slate-700 mb-2">Project Media</span>
+        <ProjectMediaManager value={media} onChange={setMedia} />
       </div>
 
       {error ? <p className="text-sm font-medium text-red-600">{error}</p> : null}
