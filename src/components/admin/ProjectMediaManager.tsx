@@ -14,7 +14,7 @@ type ProjectMediaManagerProps = {
   onChange: (media: ProjectMediaItem[]) => void;
 };
 
-const MAX_VIDEO_SECONDS = 60;
+const MAX_VIDEO_SECONDS = 10 * 60;
 
 const STAGE_LABELS: Record<ProjectMediaItem["stage"], string> = {
   before: "Before",
@@ -60,7 +60,7 @@ export function ProjectMediaManager({ value, onChange }: ProjectMediaManagerProp
           const duration = await readVideoDuration(file).catch(() => 0);
           if (duration > MAX_VIDEO_SECONDS) {
             throw new Error(
-              `"${file.name}" is ${Math.round(duration)}s long. Keep clips under ${MAX_VIDEO_SECONDS} seconds.`,
+              `"${file.name}" is ${Math.round(duration)}s long. Keep clips under ${MAX_VIDEO_SECONDS / 60} minutes.`,
             );
           }
         }
@@ -199,7 +199,7 @@ export function ProjectMediaManager({ value, onChange }: ProjectMediaManagerProp
         />
       </label>
       <p className="mt-1.5 text-xs text-slate-400">
-        Tag each photo as Before / After to power the comparison slider on the public page. Video clips should be under {MAX_VIDEO_SECONDS}s.
+        Tag each photo as Before / After to power the comparison slider on the public page. Video clips should be under {MAX_VIDEO_SECONDS / 60} minutes and 100MB.
       </p>
 
       {error ? <p className="mt-2 text-sm font-medium text-red-600">{error}</p> : null}
