@@ -3,6 +3,7 @@ import { getPublicProfileConfig } from "@/lib/site/public-profile-server";
 import { getPublicProgrammeList, getPublicFundraisingCampaignList } from "@/lib/site/content";
 import { connectToDatabase, hasValidMongoUri } from "@/lib/db/connection";
 import Project from "@/models/Project";
+import ProjectCover, { type CoverMedia } from "@/components/public/ProjectCover";
 import ProjectStatusBadge from "@/components/public/ProjectStatusBadge";
 import Reveal from "@/components/public/Reveal";
 import Counter from "@/components/public/Counter";
@@ -17,7 +18,20 @@ type ProjectSummary = {
   year: number;
   location: string;
   images: string[];
+  cover: CoverMedia | null;
 };
+
+function toCover(project: Record<string, unknown>): CoverMedia | null {
+  const media = Array.isArray(project.media) ? (project.media as Record<string, unknown>[]) : [];
+  const first = media.find((item) => item?.url);
+
+  if (first) {
+    return { url: String(first.url), type: first.type === "video" ? "video" : "image" };
+  }
+
+  const image = Array.isArray(project.images) ? project.images[0] : undefined;
+  return image ? { url: String(image), type: "image" } : null;
+}
 
 async function getLandingProjects(): Promise<ProjectSummary[]> {
   if (!hasValidMongoUri()) {
@@ -40,6 +54,7 @@ async function getLandingProjects(): Promise<ProjectSummary[]> {
       year: Number(project.year ?? 0),
       location: String(project.location ?? ""),
       images: Array.isArray(project.images) ? project.images.map((image: unknown) => String(image)) : [],
+      cover: toCover(project),
     }));
   } catch {
     return [];
@@ -400,17 +415,11 @@ export default async function HomePage() {
                     className="group card-hover flex h-full flex-col overflow-hidden rounded-3xl border border-slate-200/80 bg-white shadow-elevated"
                   >
                     <div className="aspect-[16/10] overflow-hidden bg-slate-100">
-                      {project.images[0] ? (
-                        <img
-                          src={project.images[0]}
-                          alt={project.title}
-                          className="h-full w-full object-cover transition-transform duration-700 group-hover:scale-105"
-                        />
-                      ) : (
-                        <div className="flex h-full items-center justify-center bg-gradient-to-br from-navy-900 via-navy-800 to-navy-700 text-xs font-bold uppercase tracking-[0.2em] text-white/40">
-                          {project.category || "Project"}
-                        </div>
-                      )}
+                      <ProjectCover
+                        cover={project.cover}
+                        title={project.title}
+                        fallbackLabel={project.category || "Project"}
+                      />
                     </div>
                     <div className="flex flex-1 flex-col p-6">
                       <ProjectStatusBadge status={project.status} />

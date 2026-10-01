@@ -3,34 +3,8 @@ import { getSession } from "@/lib/auth/session";
 import { connectToDatabase } from "@/lib/db/connection";
 import Project from "@/models/Project";
 import AuditLog from "@/models/AuditLog";
-
-const ALLOWED_FIELDS = ["title", "summary", "category", "status", "year", "location"] as const;
-
-type MediaItemInput = { url: string; type?: string; stage?: string; caption?: string };
-
-function normalizeMedia(media: unknown): MediaItemInput[] | null {
-  if (!Array.isArray(media)) {
-    return null;
-  }
-
-  const normalized: MediaItemInput[] = [];
-
-  for (const item of media) {
-    if (!item || typeof item !== "object" || typeof (item as { url?: unknown }).url !== "string") {
-      return null;
-    }
-
-    const record = item as Record<string, unknown>;
-    normalized.push({
-      url: record.url as string,
-      type: record.type === "video" ? "video" : "image",
-      stage: ["before", "after"].includes(String(record.stage)) ? (record.stage as string) : "general",
-      caption: typeof record.caption === "string" ? record.caption : "",
-    });
-  }
-
-  return normalized;
-}
+import { isValidObjectId } from "mongoose";
+import { firstIssue, projectUpdateSchema } from "@/lib/validation/admin.schema";
 
 export async function PATCH(request: Request, { params }: { params: Promise<{ id: string }> }) {
   const session = await getSession();
@@ -41,25 +15,41 @@ export async function PATCH(request: Request, { params }: { params: Promise<{ id
 
   const { id } = await params;
 
+  if (!isValidObjectId(id)) {
+    return NextResponse.json({ message: "Project not found." }, { status: 404 });
+  }
+
   try {
     const body = await request.json().catch(() => ({}));
+    const parsed = projectUpdateSchema.safeParse(body);
+
+    if (!parsed.success) {
+      return NextResponse.json({ message: firstIssue(parsed.error) }, { status: 400 });
+    }
+
+    const { media, ...fields } = parsed.data;
     const update: Record<string, unknown> = {};
 
-    for (const field of ALLOWED_FIELDS) {
-      if (body?.[field] !== undefined) {
-        update[field] = field === "year" ? Number(body[field]) : body[field];
+    for (const [key, value] of Object.entries(fields)) {
+      if (value !== undefined) {
+        update[key] = value;
       }
     }
 
-    if (body?.media !== undefined) {
-      const normalizedMedia = normalizeMedia(body.media);
-
-      if (normalizedMedia === null) {
-        return NextResponse.json({ message: "Media must be an array of { url, type, stage } items." }, { status: 400 });
-      }
+    if (media !== undefined) {
+      const normalizedMedia = media.map((item) => ({
+        url: item.url,
+        type: item.type ?? "image",
+        stage: item.stage ?? "general",
+        caption: item.caption ?? "",
+      }));
 
       update.media = normalizedMedia;
       update.images = normalizedMedia.filter((item) => item.type !== "video").map((item) => item.url);
+    }
+
+    if (Object.keys(update).length === 0) {
+      return NextResponse.json({ message: "No changes were submitted." }, { status: 400 });
     }
 
     await connectToDatabase();
@@ -92,6 +82,10 @@ export async function DELETE(_request: Request, { params }: { params: Promise<{ 
   }
 
   const { id } = await params;
+
+  if (!isValidObjectId(id)) {
+    return NextResponse.json({ message: "Project not found." }, { status: 404 });
+  }
 
   try {
     await connectToDatabase();

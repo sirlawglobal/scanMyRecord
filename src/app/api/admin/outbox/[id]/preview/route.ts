@@ -1,4 +1,5 @@
 import { NextResponse } from "next/server";
+import { escapeHtml } from "@/lib/email/escape";
 import { getSession } from "@/lib/auth/session";
 import { connectToDatabase, hasValidMongoUri } from "@/lib/db/connection";
 import Outbox, { type IOutbox } from "@/models/Outbox";
@@ -40,7 +41,7 @@ export async function GET(
     html = rendered.html;
     text = rendered.text;
   } else {
-    html = `<div style="font-family: sans-serif; padding: 20px;"><h3>${job.subject}</h3><p>Recipient: ${job.recipient}</p></div>`;
+    html = `<div style="font-family: sans-serif; padding: 20px;"><h3>${escapeHtml(job.subject)}</h3><p>Recipient: ${escapeHtml(job.recipient)}</p></div>`;
     text = job.subject;
   }
 

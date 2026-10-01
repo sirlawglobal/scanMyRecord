@@ -1,5 +1,6 @@
 import { connectToDatabase, hasValidMongoUri } from "@/lib/db/connection";
 import Outbox, { type IOutbox } from "@/models/Outbox";
+import { escapeHtml } from "@/lib/email/escape";
 import { sendEmail } from "@/lib/email/transporter";
 import {
   renderRegistrationConfirmationEmail,
@@ -116,7 +117,7 @@ export async function processOutboxJob(outboxId: string): Promise<boolean> {
       renderedHtml = rendered.html;
       renderedText = rendered.text;
     } else {
-      renderedHtml = `<p>${job.subject}</p>`;
+      renderedHtml = `<p>${escapeHtml(job.subject)}</p>`;
       renderedText = job.subject;
     }
 

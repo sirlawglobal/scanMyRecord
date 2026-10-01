@@ -2,32 +2,22 @@ import Link from "next/link";
 
 import type { PublicProject } from "@/lib/site/projects";
 
+import ProjectCover, { pickCover } from "./ProjectCover";
 import ProjectStatusBadge from "./ProjectStatusBadge";
 
 export default function ProjectCard({ project }: { project: PublicProject }) {
-  const coverImage = project.images?.[0];
-
   return (
     <Link
       href={`/projects/${project.slug}`}
       className="group card-hover flex h-full flex-col overflow-hidden rounded-3xl border border-slate-200/80 bg-white shadow-elevated"
     >
-      {/* Cover image */}
+      {/* Cover: first image, or a muted looping video preview */}
       <div className="aspect-[16/10] overflow-hidden bg-slate-100">
-        {coverImage ? (
-          // eslint-disable-next-line @next/next/no-img-element
-          <img
-            src={coverImage}
-            alt={project.title}
-            className="h-full w-full object-cover transition-transform duration-700 group-hover:scale-105"
-          />
-        ) : (
-          <div className="flex h-full items-center justify-center bg-gradient-to-br from-navy-900 via-navy-800 to-navy-700">
-            <span className="text-xs font-bold uppercase tracking-[0.22em] text-white/30">
-              {project.category || "Project"}
-            </span>
-          </div>
-        )}
+        <ProjectCover
+          cover={pickCover(project.media, project.images)}
+          title={project.title}
+          fallbackLabel={project.category || "Project"}
+        />
       </div>
 
       {/* Body */}

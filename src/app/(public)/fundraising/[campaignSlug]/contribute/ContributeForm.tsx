@@ -2,6 +2,8 @@
 
 import { useState } from "react";
 
+const EMAIL_PATTERN = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
 const presetAmounts = [5000, 10000, 25000, 50000, 100000];
 
 export default function ContributeForm({ campaignSlug }: { campaignSlug: string }) {
@@ -24,13 +26,18 @@ export default function ContributeForm({ campaignSlug }: { campaignSlug: string 
       return;
     }
 
-    if (!email.trim() || !email.includes("@")) {
+    if (!EMAIL_PATTERN.test(email.trim())) {
       setError("Please enter a valid email address.");
       return;
     }
 
     if (!Number.isFinite(currentAmount) || currentAmount < 100) {
       setError("Contribution amount must be at least ₦100.");
+      return;
+    }
+
+    if (currentAmount > 10_000_000) {
+      setError("Contribution amount cannot exceed ₦10,000,000.");
       return;
     }
 
@@ -97,6 +104,9 @@ export default function ContributeForm({ campaignSlug }: { campaignSlug: string 
           <input
             type="number"
             min={100}
+            max={10000000}
+            step={1}
+            inputMode="numeric"
             value={customAmount}
             onChange={(event) => setCustomAmount(event.target.value)}
             placeholder="Enter another amount"
@@ -110,6 +120,9 @@ export default function ContributeForm({ campaignSlug }: { campaignSlug: string 
           Full name
           <input
             required
+            minLength={2}
+            maxLength={100}
+            autoComplete="name"
             value={name}
             onChange={(event) => setName(event.target.value)}
             placeholder="e.g. Chief Adebayo Adeleke"
@@ -122,6 +135,8 @@ export default function ContributeForm({ campaignSlug }: { campaignSlug: string 
           <input
             required
             type="email"
+            maxLength={254}
+            autoComplete="email"
             value={email}
             onChange={(event) => setEmail(event.target.value)}
             placeholder="name@example.com"

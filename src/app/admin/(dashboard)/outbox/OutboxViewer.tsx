@@ -530,9 +530,13 @@ export function OutboxViewer() {
             <div className="flex-1 overflow-y-auto bg-slate-100 p-6">
               {previewTab === "visual" ? (
                 <div className="mx-auto max-w-xl overflow-hidden rounded-xl border border-slate-200 bg-white shadow-md">
-                  <div
-                    dangerouslySetInnerHTML={{ __html: previewData.html }}
-                    className="email-content-preview"
+                  {/* Sandboxed with no permissions: scripts, forms and top-navigation in
+                      the email HTML can never run in the admin's session. */}
+                  <iframe
+                    title="Email preview"
+                    sandbox=""
+                    srcDoc={previewData.html}
+                    className="email-content-preview h-[60vh] w-full border-0"
                   />
                 </div>
               ) : (

@@ -1,3 +1,5 @@
+import { escapeHtml } from "@/lib/email/escape";
+
 export type DonationReceiptEmailPayload = {
   reference: string;
   donorName: string;
@@ -55,7 +57,7 @@ Scan My Record — Public Civic Accountability & Transparency Platform
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>${subject}</title>
+  <title>${escapeHtml(subject)}</title>
   <style>
     body { margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; background-color: #f1f5f9; color: #1e293b; }
     .container { max-width: 600px; margin: 30px auto; background-color: #ffffff; border-radius: 16px; overflow: hidden; box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.08); }
@@ -90,21 +92,21 @@ Scan My Record — Public Civic Accountability & Transparency Platform
     </div>
 
     <div class="body">
-      <p class="greeting">Dear ${data.donorName},</p>
+      <p class="greeting">Dear ${escapeHtml(data.donorName)},</p>
       <p class="lead-text">
-        Thank you for supporting community progress. Your contribution to <strong>${data.campaignTitle}</strong> has been successfully processed and verified.
+        Thank you for supporting community progress. Your contribution to <strong>${escapeHtml(data.campaignTitle)}</strong> has been successfully processed and verified.
       </p>
 
       <div class="amount-box">
         <p class="amount-label">Verified Contribution</p>
         <p class="amount-value">${formattedAmount}</p>
-        <div class="reference-pill">Ref: ${data.reference}</div>
+        <div class="reference-pill">Ref: ${escapeHtml(data.reference)}</div>
       </div>
 
       <table class="details-table">
         <tr>
           <td>Campaign Drive</td>
-          <td><strong>${data.campaignTitle}</strong></td>
+          <td><strong>${escapeHtml(data.campaignTitle)}</strong></td>
         </tr>
         <tr>
           <td>Payment Status</td>
@@ -112,15 +114,15 @@ Scan My Record — Public Civic Accountability & Transparency Platform
         </tr>
         <tr>
           <td>Constituency</td>
-          <td>${politicianConstituency}</td>
+          <td>${escapeHtml(politicianConstituency)}</td>
         </tr>
         <tr>
           <td>Office</td>
-          <td>${politicianOffice}</td>
+          <td>${escapeHtml(politicianOffice)}</td>
         </tr>
         <tr>
           <td>Leadership</td>
-          <td>${politicianName}</td>
+          <td>${escapeHtml(politicianName)}</td>
         </tr>
       </table>
 
@@ -129,14 +131,14 @@ Scan My Record — Public Civic Accountability & Transparency Platform
       </div>
 
       <div class="btn-container">
-        <a href="${campaignUrl}" class="btn" target="_blank" rel="noopener noreferrer">View Live Campaign Progress &rarr;</a>
+        <a href="${escapeHtml(campaignUrl)}" class="btn" target="_blank" rel="noopener noreferrer">View Live Campaign Progress &rarr;</a>
       </div>
     </div>
 
     <div class="footer">
-      <p class="footer-politician">${politicianName} &mdash; ${politicianOffice}</p>
+      <p class="footer-politician">${escapeHtml(politicianName)} &mdash; ${escapeHtml(politicianOffice)}</p>
       <p style="margin: 0;">Scan My Record &bull; Official Public Record Platform</p>
-      <p style="margin: 6px 0 0 0; font-size: 11px; color: #cbd5e1;">Receipt ID: ${data.reference}</p>
+      <p style="margin: 6px 0 0 0; font-size: 11px; color: #cbd5e1;">Receipt ID: ${escapeHtml(data.reference)}</p>
     </div>
   </div>
 </body>

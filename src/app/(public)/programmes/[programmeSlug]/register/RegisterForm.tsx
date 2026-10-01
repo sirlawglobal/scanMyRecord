@@ -26,6 +26,7 @@ export default function RegisterForm({ programmeSlug }: { programmeSlug: string 
       state: "",
       lga: "",
       customFields: {},
+      website: "",
     },
   });
 
@@ -111,6 +112,14 @@ export default function RegisterForm({ programmeSlug }: { programmeSlug: string 
             className="mt-2 w-full rounded-xl border border-slate-200 px-4 py-2.5 text-slate-900 outline-none transition focus:border-navy-900 focus:ring-2 focus:ring-navy-900/10"
           />
           {errors.lga && <span className="mt-1 block text-xs text-red-600">{errors.lga.message}</span>}
+        </label>
+      </div>
+
+      {/* Honeypot: hidden from people and assistive tech, tempting to bots. */}
+      <div aria-hidden="true" className="absolute -left-[9999px] h-0 w-0 overflow-hidden">
+        <label>
+          Leave this field empty
+          <input type="text" tabIndex={-1} autoComplete="off" {...register("website")} />
         </label>
       </div>
 

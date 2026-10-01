@@ -1,3 +1,4 @@
+import { randomInt } from "node:crypto";
 import { z } from "zod";
 import { connectToDatabase, hasValidMongoUri } from "@/lib/db/connection";
 import { getPaymentProvider } from "@/lib/payments/factory";
@@ -6,18 +7,41 @@ import FundraisingCampaign from "@/models/FundraisingCampaign";
 import AuditLog from "@/models/AuditLog";
 import { queueOutboxEmail } from "./outbox.service";
 
+export const MIN_DONATION = 100;
+export const MAX_DONATION = 10_000_000;
+
 export const donationSchema = z.object({
-  donorName: z.string().trim().min(2, "Donor name is required."),
-  donorEmail: z.string().trim().email("A valid email is required."),
-  amount: z.coerce.number().int().positive("Amount must be greater than zero."),
-  campaignSlug: z.string().trim().min(2, "Campaign is required."),
-  anonymous: z.boolean().default(false),
+  donorName: z
+    .string({ error: "Donor name is required." })
+    .trim()
+    .min(2, "Donor name is required.")
+    .max(100, "Donor name must be at most 100 characters.")
+    // Names are shown on public leaderboards and in emails: no control characters or markup brackets.
+    .refine((value) => !/[\u0000-\u001f\u007f<>]/.test(value), "Donor name contains invalid characters."),
+  donorEmail: z
+    .string({ error: "A valid email is required." })
+    .trim()
+    .toLowerCase()
+    .max(254, "Email is too long.")
+    .email("A valid email is required."),
+  amount: z.coerce
+    .number({ error: "Amount must be a number." })
+    .int("Amount must be a whole number of naira.")
+    .min(MIN_DONATION, `Contribution amount must be at least \u20a6${MIN_DONATION}.`)
+    .max(MAX_DONATION, `Contribution amount cannot exceed \u20a6${MAX_DONATION.toLocaleString("en-NG")}.`),
+  campaignSlug: z
+    .string({ error: "Campaign is required." })
+    .trim()
+    .min(2, "Campaign is required.")
+    .max(120, "Campaign is invalid.")
+    .regex(/^[a-z0-9-]+$/, "Campaign is invalid."),
+  anonymous: z.boolean({ error: "anonymous must be true or false." }).default(false),
 });
 
 export type DonationInput = z.infer<typeof donationSchema>;
 
 export function createDonationReference(year = new Date().getFullYear()) {
-  const sequence = Math.floor(Math.random() * 900000) + 100000;
+  const sequence = randomInt(100000, 1000000);
   return `SMR-DON-${year}-${sequence}`;
 }
 
@@ -116,8 +140,8 @@ export async function createDonation(data: unknown): Promise<CreateDonationResul
 
     return { ok: true, reference, authorizationUrl };
   } catch (error) {
-    const message = error instanceof Error ? error.message : "Failed to initialize payment with Paystack.";
-    return { ok: false, error: message };
+    console.error("Payment initialisation failed", error);
+    return { ok: false, error: "We could not start the payment. Please try again in a moment." };
   }
 }
 

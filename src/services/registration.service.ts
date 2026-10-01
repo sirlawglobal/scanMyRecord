@@ -1,12 +1,18 @@
+import { randomInt } from "node:crypto";
 import { z } from "zod";
-import { registrationSchema } from "@/lib/validation/registration.schema";
+import {
+  registrationSchema,
+  validateCustomFields,
+  type ProgrammeFieldDefinition,
+} from "@/lib/validation/registration.schema";
 import { connectToDatabase, hasValidMongoUri } from "@/lib/db/connection";
 import Programme from "@/models/Programme";
+import ProgrammeField from "@/models/ProgrammeField";
 import Registration from "@/models/Registration";
 import { queueOutboxEmail } from "@/services/outbox.service";
 
 export function generateRegistrationReference(year = new Date().getFullYear()) {
-  const sequence = Math.floor(Math.random() * 900000) + 100000;
+  const sequence = randomInt(100000, 1000000);
   return `SMR-${year}-${sequence}`;
 }
 
@@ -75,20 +81,39 @@ export async function createRegistration(
     }
   }
 
-  const { fullName, email, phone, ...rest } = parsed.data;
+  const fieldDefinitions = (await ProgrammeField.find({ programmeId: programme._id }).lean()) as unknown as ProgrammeFieldDefinition[];
+  const customFields = validateCustomFields(fieldDefinitions, parsed.data.customFields);
+
+  if (!customFields.ok) {
+    return { ok: false, error: customFields.error };
+  }
+
+  const { fullName, email, phone, address, state, lga } = parsed.data;
 
   for (let attempt = 0; attempt < 3; attempt += 1) {
     const reference = generateRegistrationReference();
 
     try {
-      await Registration.create({
+      const created = await Registration.create({
         programmeId: programme._id,
         reference,
         fullName,
         email,
         phone,
-        payload: rest,
+        payload: { address, state, lga, customFields: customFields.values },
       });
+
+      // The count-then-insert check above is racy, so confirm the seat after
+      // inserting: only the first `capacity` registrations (by _id order, which
+      // every concurrent request observes identically) keep their place.
+      if (typeof programme.capacity === "number") {
+        const rank = await Registration.countDocuments({ programmeId: programme._id, _id: { $lte: created._id } });
+
+        if (rank > programme.capacity) {
+          await Registration.deleteOne({ _id: created._id });
+          return { ok: false, error: "This programme has reached its registration capacity." };
+        }
+      }
 
       // Persist to Outbox and trigger asynchronous non-blocking email dispatch
       await queueOutboxEmail({
@@ -129,14 +154,25 @@ export async function createRegistration(
   return { ok: false, error: "Could not generate a unique registration reference. Please try again." };
 }
 
-export async function getRegistrationByReference(reference: string) {
-  if (!reference || !hasValidMongoUri()) {
+/**
+ * Looks a registration up for the person who made it. The email must match, so
+ * a guessed or leaked reference alone reveals nothing, and only non-personal
+ * fields are returned.
+ */
+export async function getRegistrationByReference(reference: string, email: string) {
+  if (!reference || !email || !hasValidMongoUri()) {
     return null;
   }
 
   try {
     await connectToDatabase();
-    return await Registration.findOne({ reference }).lean();
+
+    return await Registration.findOne({
+      reference: String(reference),
+      email: String(email).trim().toLowerCase(),
+    })
+      .select("reference status createdAt -_id")
+      .lean();
   } catch {
     return null;
   }

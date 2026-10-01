@@ -4,44 +4,8 @@ import { connectToDatabase } from "@/lib/db/connection";
 import Project from "@/models/Project";
 import Politician from "@/models/Politician";
 import AuditLog from "@/models/AuditLog";
-
-function slugify(title: string) {
-  return title
-    .trim()
-    .toLowerCase()
-    .replace(/[^a-z0-9]+/g, "-")
-    .replace(/(^-|-$)/g, "");
-}
-
-type MediaItemInput = { url: string; type?: string; stage?: string; caption?: string };
-
-function normalizeMedia(media: unknown): MediaItemInput[] | null {
-  if (media === undefined) {
-    return [];
-  }
-
-  if (!Array.isArray(media)) {
-    return null;
-  }
-
-  const normalized: MediaItemInput[] = [];
-
-  for (const item of media) {
-    if (!item || typeof item !== "object" || typeof (item as { url?: unknown }).url !== "string") {
-      return null;
-    }
-
-    const record = item as Record<string, unknown>;
-    normalized.push({
-      url: record.url as string,
-      type: record.type === "video" ? "video" : "image",
-      stage: ["before", "after"].includes(String(record.stage)) ? (record.stage as string) : "general",
-      caption: typeof record.caption === "string" ? record.caption : "",
-    });
-  }
-
-  return normalized;
-}
+import { slugify, uniqueSlug } from "@/lib/slug";
+import { firstIssue, projectCreateSchema } from "@/lib/validation/admin.schema";
 
 export async function POST(request: Request) {
   const session = await getSession();
@@ -52,20 +16,24 @@ export async function POST(request: Request) {
 
   try {
     const body = await request.json().catch(() => ({}));
-    const { title, summary, category, status, year, location, media } = body ?? {};
+    const parsed = projectCreateSchema.safeParse(body);
 
-    if (typeof title !== "string" || title.trim().length === 0) {
-      return NextResponse.json({ message: "Title is required." }, { status: 400 });
+    if (!parsed.success) {
+      return NextResponse.json({ message: firstIssue(parsed.error) }, { status: 400 });
     }
 
-    if (typeof category !== "string" || category.trim().length === 0) {
-      return NextResponse.json({ message: "Category is required." }, { status: 400 });
-    }
+    const { title, summary, category, status, year, location } = parsed.data;
+    const media = (parsed.data.media ?? []).map((item) => ({
+      url: item.url,
+      type: item.type ?? "image",
+      stage: item.stage ?? "general",
+      caption: item.caption ?? "",
+    }));
 
-    const normalizedMedia = normalizeMedia(media);
+    const baseSlug = slugify(title);
 
-    if (normalizedMedia === null) {
-      return NextResponse.json({ message: "Media must be an array of { url, type, stage } items." }, { status: 400 });
+    if (!baseSlug) {
+      return NextResponse.json({ message: "Title must contain letters or numbers." }, { status: 400 });
     }
 
     await connectToDatabase();
@@ -76,7 +44,7 @@ export async function POST(request: Request) {
       return NextResponse.json({ message: "No politician profile found." }, { status: 400 });
     }
 
-    const slug = slugify(title);
+    const slug = await uniqueSlug(async (candidate) => Boolean(await Project.exists({ slug: candidate })), baseSlug);
 
     let created;
 
@@ -88,12 +56,16 @@ export async function POST(request: Request) {
         summary: summary ?? "",
         category,
         status: status ?? "proposed",
-        year: year !== undefined && year !== null && year !== "" ? Number(year) : undefined,
+        year,
         location: location ?? "",
-        media: normalizedMedia,
-        images: normalizedMedia.filter((item) => item.type !== "video").map((item) => item.url),
+        media,
+        images: media.filter((item) => item.type !== "video").map((item) => item.url),
       });
-    } catch {
+    } catch (error) {
+      if ((error as { code?: number })?.code === 11000) {
+        return NextResponse.json({ message: "A project with this title already exists. Try again." }, { status: 409 });
+      }
+
       return NextResponse.json({ message: "Failed to create project. Check the submitted fields." }, { status: 400 });
     }
 

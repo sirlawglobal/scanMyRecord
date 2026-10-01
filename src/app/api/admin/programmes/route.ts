@@ -3,14 +3,8 @@ import { getSession } from "@/lib/auth/session";
 import { connectToDatabase } from "@/lib/db/connection";
 import Programme from "@/models/Programme";
 import Politician from "@/models/Politician";
-
-function slugify(title: string) {
-  return title
-    .trim()
-    .toLowerCase()
-    .replace(/[^a-z0-9]+/g, "-")
-    .replace(/(^-|-$)/g, "");
-}
+import { slugify, uniqueSlug } from "@/lib/slug";
+import { firstIssue, programmeCreateSchema } from "@/lib/validation/admin.schema";
 
 export async function POST(request: Request) {
   const session = await getSession();
@@ -21,45 +15,19 @@ export async function POST(request: Request) {
 
   try {
     const body = await request.json().catch(() => ({}));
-    const title = typeof body?.title === "string" ? body.title.trim() : "";
+    const parsed = programmeCreateSchema.safeParse(body);
 
-    if (!title) {
-      return NextResponse.json({ message: "A programme title is required." }, { status: 400 });
+    if (!parsed.success) {
+      return NextResponse.json({ message: firstIssue(parsed.error) }, { status: 400 });
     }
 
-    const description = typeof body?.description === "string" ? body.description : "";
-    const category = typeof body?.category === "string" && body.category.trim() ? body.category.trim() : "Youth Empowerment";
+    const { title, description, capacity, registrationDeadline, registrationOpen, images } = parsed.data;
+    const category = parsed.data.category || "Youth Empowerment";
 
-    const capacity =
-      body?.capacity === "" || body?.capacity === null || body?.capacity === undefined
-        ? null
-        : Number(body.capacity);
+    const baseSlug = slugify(title);
 
-    if (capacity !== null && (!Number.isFinite(capacity) || capacity < 0)) {
-      return NextResponse.json({ message: "Capacity must be a positive number." }, { status: 400 });
-    }
-
-    const registrationDeadline =
-      body?.registrationDeadline === "" || body?.registrationDeadline === null || body?.registrationDeadline === undefined
-        ? null
-        : new Date(body.registrationDeadline);
-
-    if (registrationDeadline !== null && Number.isNaN(registrationDeadline.getTime())) {
-      return NextResponse.json({ message: "Invalid registration deadline." }, { status: 400 });
-    }
-
-    const registrationOpen = Boolean(body?.registrationOpen);
-
-    const images = body?.images;
-
-    if (images !== undefined && (!Array.isArray(images) || !images.every((item) => typeof item === "string"))) {
-      return NextResponse.json({ message: "Images must be an array of URLs." }, { status: 400 });
-    }
-
-    const slug = slugify(title);
-
-    if (!slug) {
-      return NextResponse.json({ message: "A valid programme title is required." }, { status: 400 });
+    if (!baseSlug) {
+      return NextResponse.json({ message: "Title must contain letters or numbers." }, { status: 400 });
     }
 
     await connectToDatabase();
@@ -70,21 +38,27 @@ export async function POST(request: Request) {
       return NextResponse.json({ message: "No politician profile found." }, { status: 400 });
     }
 
+    const slug = await uniqueSlug(async (candidate) => Boolean(await Programme.exists({ slug: candidate })), baseSlug);
+
     const programme = await Programme.create({
       politicianId: politician._id,
       title,
       slug,
-      description,
+      description: description ?? "",
       category,
       status: "active",
-      registrationOpen,
-      capacity,
-      registrationDeadline,
-      images: Array.isArray(images) ? images : [],
+      registrationOpen: registrationOpen ?? false,
+      capacity: capacity ?? null,
+      registrationDeadline: registrationDeadline ?? null,
+      images: images ?? [],
     });
 
     return NextResponse.json(programme, { status: 201 });
-  } catch {
+  } catch (error) {
+    if ((error as { code?: number })?.code === 11000) {
+      return NextResponse.json({ message: "A programme with this title already exists. Try again." }, { status: 409 });
+    }
+
     return NextResponse.json({ message: "Failed to create programme." }, { status: 500 });
   }
 }
