@@ -2,7 +2,9 @@ import Link from "next/link";
 
 import type { PublicProject } from "@/lib/site/projects";
 
-import ProjectCover, { pickCover } from "./ProjectCover";
+import { pickCover } from "@/lib/site/cover";
+
+import ProjectCover from "./ProjectCover";
 import ProjectStatusBadge from "./ProjectStatusBadge";
 
 export default function ProjectCard({ project }: { project: PublicProject }) {
