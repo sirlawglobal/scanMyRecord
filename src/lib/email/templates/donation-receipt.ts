@@ -59,7 +59,7 @@ Scan My Record — Public Civic Accountability & Transparency Platform
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>${escapeHtml(subject)}</title>
   <style>
-    body { margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; background-color: #f1f5f9; color: #1e293b; }
+    body { margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; background-color: #eaf4ff; color: #1f2937; }
     .container { max-width: 600px; margin: 30px auto; background-color: #ffffff; border-radius: 16px; overflow: hidden; box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.08); }
     .header { background-color: #0057b8; padding: 32px 24px; text-align: center; color: #ffffff; background-image: radial-gradient(ellipse at 50% 0%, rgba(255, 255, 255, 0.18), transparent); }
     .logo-badge { display: inline-block; padding: 6px 14px; background: rgba(255, 255, 255, 0.15); border: 1px solid rgba(255, 255, 255, 0.35); border-radius: 20px; font-size: 11px; font-weight: bold; letter-spacing: 0.2em; text-transform: uppercase; color: #d4eafc; margin-bottom: 12px; }
@@ -67,20 +67,20 @@ Scan My Record — Public Civic Accountability & Transparency Platform
     .header-sub { margin-top: 6px; font-size: 13px; color: #94a3b8; }
     .body { padding: 32px 24px; }
     .greeting { font-size: 16px; font-weight: 600; color: #0f172a; margin-bottom: 12px; }
-    .lead-text { font-size: 14px; line-height: 1.6; color: #475569; margin-bottom: 24px; }
+    .lead-text { font-size: 14px; line-height: 1.6; color: #6b7280; margin-bottom: 24px; }
     .amount-box { background-color: #0057b8; border-radius: 14px; padding: 24px; text-align: center; margin-bottom: 24px; color: #ffffff; }
     .amount-label { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.18em; color: #d4eafc; margin: 0; }
     .amount-value { font-size: 36px; font-weight: 800; color: #ffffff; margin: 8px 0 0 0; }
-    .reference-pill { display: inline-block; margin-top: 10px; background: rgba(255, 255, 255, 0.1); border: 1px solid rgba(255, 255, 255, 0.15); border-radius: 30px; padding: 4px 14px; font-family: 'Courier New', Courier, monospace; font-size: 13px; color: #e2e8f0; }
+    .reference-pill { display: inline-block; margin-top: 10px; background: rgba(255, 255, 255, 0.1); border: 1px solid rgba(255, 255, 255, 0.15); border-radius: 30px; padding: 4px 14px; font-family: 'Courier New', Courier, monospace; font-size: 13px; color: #e5e7eb; }
     .details-table { width: 100%; border-collapse: collapse; margin-bottom: 24px; }
-    .details-table td { padding: 12px 14px; font-size: 13px; border-bottom: 1px solid #f1f5f9; }
+    .details-table td { padding: 12px 14px; font-size: 13px; border-bottom: 1px solid #eaf4ff; }
     .details-table td:first-child { font-weight: 600; color: #64748b; width: 35%; }
     .details-table td:last-child { color: #0f172a; font-weight: 500; }
-    .transparency-note { background-color: #f8fafc; border-left: 4px solid #0072ce; border-radius: 0 8px 8px 0; padding: 14px 16px; margin-bottom: 28px; font-size: 13px; color: #475569; line-height: 1.5; }
+    .transparency-note { background-color: #f7f9fc; border-left: 4px solid #0072ce; border-radius: 0 8px 8px 0; padding: 14px 16px; margin-bottom: 28px; font-size: 13px; color: #6b7280; line-height: 1.5; }
     .btn-container { text-align: center; margin-bottom: 24px; }
     .btn { display: inline-block; padding: 12px 28px; background-color: #0057b8; color: #ffffff !important; text-decoration: none; border-radius: 50px; font-size: 13px; font-weight: 700; box-shadow: 0 4px 12px rgba(0, 87, 184, 0.25); }
-    .footer { background-color: #f8fafc; border-top: 1px solid #e2e8f0; padding: 24px; text-align: center; font-size: 12px; color: #94a3b8; line-height: 1.5; }
-    .footer-politician { font-weight: 600; color: #475569; margin-bottom: 4px; }
+    .footer { background-color: #f7f9fc; border-top: 1px solid #e5e7eb; padding: 24px; text-align: center; font-size: 12px; color: #94a3b8; line-height: 1.5; }
+    .footer-politician { font-weight: 600; color: #6b7280; margin-bottom: 4px; }
   </style>
 </head>
 <body>
