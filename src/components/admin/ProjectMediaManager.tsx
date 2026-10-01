@@ -14,7 +14,7 @@ type ProjectMediaManagerProps = {
   onChange: (media: ProjectMediaItem[]) => void;
 };
 
-const MAX_VIDEO_SECONDS = 10 * 60;
+const MAX_VIDEO_SECONDS = 60 * 60;
 
 const STAGE_LABELS: Record<ProjectMediaItem["stage"], string> = {
   before: "Before",
@@ -22,12 +22,54 @@ const STAGE_LABELS: Record<ProjectMediaItem["stage"], string> = {
   general: "General",
 };
 
+type UploadBody = {
+  url?: string;
+  type?: string;
+  message?: string;
+  secure_url?: string;
+  error?: { message?: string };
+};
+type UploadResponse = { ok: boolean; body: UploadBody };
+
+// fetch() cannot report upload progress, so uploads use XMLHttpRequest.
+function postWithProgress(
+  url: string,
+  formData: FormData,
+  onProgress: (percent: number) => void,
+): Promise<UploadResponse> {
+  return new Promise((resolve, reject) => {
+    const xhr = new XMLHttpRequest();
+    xhr.open("POST", url);
+
+    xhr.upload.onprogress = (event) => {
+      if (event.lengthComputable) {
+        onProgress(Math.min(100, Math.round((event.loaded / event.total) * 100)));
+      }
+    };
+    xhr.onload = () => {
+      let body: UploadBody = {};
+      try {
+        body = JSON.parse(xhr.responseText);
+      } catch {
+        // non-JSON response (e.g. a proxy error page)
+      }
+      resolve({ ok: xhr.status >= 200 && xhr.status < 300, body });
+    };
+    xhr.onerror = () => reject(new Error("Network error during upload."));
+    xhr.onabort = () => reject(new Error("Upload cancelled."));
+    xhr.send(formData);
+  });
+}
+
 const MAX_VIDEO_BYTES = 100 * 1024 * 1024;
 const ALLOWED_VIDEO_TYPES = ["video/mp4", "video/webm", "video/quicktime"];
 
 // Videos go straight from the browser to Cloudinary: Vercel rejects request
 // bodies over ~4.5MB, so they cannot be proxied through our own API.
-async function uploadVideoDirect(file: File): Promise<{ url: string; type: "video" }> {
+async function uploadVideoDirect(
+  file: File,
+  onProgress: (percent: number) => void,
+): Promise<{ url: string; type: "video" }> {
   if (!ALLOWED_VIDEO_TYPES.includes(file.type)) {
     throw new Error("Unsupported video type. Use MP4, WEBM or MOV.");
   }
@@ -53,13 +95,13 @@ async function uploadVideoDirect(file: File): Promise<{ url: string; type: "vide
   formData.append("timestamp", String(sign.timestamp));
   formData.append("signature", sign.signature);
 
-  const response = await fetch(`https://api.cloudinary.com/v1_1/${sign.cloudName}/video/upload`, {
-    method: "POST",
-    body: formData,
-  });
-  const body = await response.json().catch(() => ({}));
+  const { ok, body } = await postWithProgress(
+    `https://api.cloudinary.com/v1_1/${sign.cloudName}/video/upload`,
+    formData,
+    onProgress,
+  );
 
-  if (!response.ok || !body?.secure_url) {
+  if (!ok || !body?.secure_url) {
     throw new Error(body?.error?.message ?? `Failed to upload "${file.name}" to Cloudinary.`);
   }
 
@@ -84,6 +126,7 @@ function readVideoDuration(file: File): Promise<number> {
 
 export function ProjectMediaManager({ value, onChange }: ProjectMediaManagerProps) {
   const [isUploading, setIsUploading] = useState(false);
+  const [progress, setProgress] = useState<{ percent: number; name: string; index: number; total: number } | null>(null);
   const [error, setError] = useState<string | null>(null);
 
   async function handleFiles(event: React.ChangeEvent<HTMLInputElement>) {
@@ -99,7 +142,13 @@ export function ProjectMediaManager({ value, onChange }: ProjectMediaManagerProp
     try {
       const uploads: ProjectMediaItem[] = [];
 
-      for (const file of Array.from(files)) {
+      const fileList = Array.from(files);
+
+      for (const [fileIndex, file] of fileList.entries()) {
+        const report = (percent: number) =>
+          setProgress({ percent, name: file.name, index: fileIndex + 1, total: fileList.length });
+        report(0);
+
         if (file.type.startsWith("video/")) {
           const duration = await readVideoDuration(file).catch(() => 0);
           if (duration > MAX_VIDEO_SECONDS) {
@@ -113,19 +162,16 @@ export function ProjectMediaManager({ value, onChange }: ProjectMediaManagerProp
         let data: { url?: string; type?: string };
 
         if (isVideo) {
-          data = await uploadVideoDirect(file);
+          data = await uploadVideoDirect(file, report);
         } else {
           const formData = new FormData();
           formData.append("file", file);
 
-          const response = await fetch("/api/admin/media/upload", {
-            method: "POST",
-            body: formData,
-          });
+          const result = await postWithProgress("/api/admin/media/upload", formData, report);
 
-          data = await response.json().catch(() => ({}));
+          data = result.body;
 
-          if (!response.ok) {
+          if (!result.ok) {
             throw new Error((data as { message?: string })?.message ?? `Failed to upload "${file.name}".`);
           }
         }
@@ -143,6 +189,7 @@ export function ProjectMediaManager({ value, onChange }: ProjectMediaManagerProp
       setError(err instanceof Error ? err.message : "Failed to upload media.");
     } finally {
       setIsUploading(false);
+      setProgress(null);
       event.target.value = "";
     }
   }
@@ -249,6 +296,22 @@ export function ProjectMediaManager({ value, onChange }: ProjectMediaManagerProp
           disabled={isUploading}
         />
       </label>
+      {isUploading && progress ? (
+        <div className="mt-3" role="progressbar" aria-valuemin={0} aria-valuemax={100} aria-valuenow={progress.percent}>
+          <div className="mb-1 flex items-center justify-between gap-3 text-xs font-semibold text-slate-600">
+            <span className="truncate">
+              Uploading {progress.index}/{progress.total}: {progress.name}
+            </span>
+            <span>{progress.percent}%</span>
+          </div>
+          <div className="h-2.5 w-full overflow-hidden rounded-full bg-slate-200">
+            <div
+              className="h-full rounded-full bg-gradient-to-r from-gold-500 to-gold-300 transition-all duration-200"
+              style={{ width: `${progress.percent}%` }}
+            />
+          </div>
+        </div>
+      ) : null}
       <p className="mt-1.5 text-xs text-slate-400">
         Tag each photo as Before / After to power the comparison slider on the public page. Video clips should be under {MAX_VIDEO_SECONDS / 60} minutes and 100MB.
       </p>
