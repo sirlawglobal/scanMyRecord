@@ -22,6 +22,50 @@ const STAGE_LABELS: Record<ProjectMediaItem["stage"], string> = {
   general: "General",
 };
 
+const MAX_VIDEO_BYTES = 100 * 1024 * 1024;
+const ALLOWED_VIDEO_TYPES = ["video/mp4", "video/webm", "video/quicktime"];
+
+// Videos go straight from the browser to Cloudinary: Vercel rejects request
+// bodies over ~4.5MB, so they cannot be proxied through our own API.
+async function uploadVideoDirect(file: File): Promise<{ url: string; type: "video" }> {
+  if (!ALLOWED_VIDEO_TYPES.includes(file.type)) {
+    throw new Error("Unsupported video type. Use MP4, WEBM or MOV.");
+  }
+
+  if (file.size > MAX_VIDEO_BYTES) {
+    throw new Error(`"${file.name}" is too large. Maximum video size is 100MB.`);
+  }
+
+  const signResponse = await fetch("/api/admin/media/sign", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ resourceType: "video" }),
+  });
+  const sign = await signResponse.json().catch(() => ({}));
+
+  if (!signResponse.ok) {
+    throw new Error(sign?.message ?? "Could not authorise the video upload.");
+  }
+
+  const formData = new FormData();
+  formData.append("file", file);
+  formData.append("api_key", sign.apiKey);
+  formData.append("timestamp", String(sign.timestamp));
+  formData.append("signature", sign.signature);
+
+  const response = await fetch(`https://api.cloudinary.com/v1_1/${sign.cloudName}/video/upload`, {
+    method: "POST",
+    body: formData,
+  });
+  const body = await response.json().catch(() => ({}));
+
+  if (!response.ok || !body?.secure_url) {
+    throw new Error(body?.error?.message ?? `Failed to upload "${file.name}" to Cloudinary.`);
+  }
+
+  return { url: body.secure_url as string, type: "video" };
+}
+
 function readVideoDuration(file: File): Promise<number> {
   return new Promise((resolve, reject) => {
     const video = document.createElement("video");
@@ -65,18 +109,25 @@ export function ProjectMediaManager({ value, onChange }: ProjectMediaManagerProp
           }
         }
 
-        const formData = new FormData();
-        formData.append("file", file);
+        const isVideo = file.type.startsWith("video/");
+        let data: { url?: string; type?: string };
 
-        const response = await fetch("/api/admin/media/upload", {
-          method: "POST",
-          body: formData,
-        });
+        if (isVideo) {
+          data = await uploadVideoDirect(file);
+        } else {
+          const formData = new FormData();
+          formData.append("file", file);
 
-        const data = await response.json().catch(() => ({}));
+          const response = await fetch("/api/admin/media/upload", {
+            method: "POST",
+            body: formData,
+          });
 
-        if (!response.ok) {
-          throw new Error(data?.message ?? `Failed to upload "${file.name}".`);
+          data = await response.json().catch(() => ({}));
+
+          if (!response.ok) {
+            throw new Error((data as { message?: string })?.message ?? `Failed to upload "${file.name}".`);
+          }
         }
 
         uploads.push({
