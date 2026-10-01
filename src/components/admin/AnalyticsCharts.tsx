@@ -20,7 +20,7 @@ export function AnalyticsCharts({ data }: { data: AnalyticsPoint[] }) {
               <XAxis dataKey="date" tick={{ fontSize: 12 }} stroke="#94a3b8" />
               <YAxis allowDecimals={false} tick={{ fontSize: 12 }} stroke="#94a3b8" />
               <Tooltip />
-              <Line type="monotone" dataKey="scans" stroke="#0b63f5" strokeWidth={2} dot={false} />
+              <Line type="monotone" dataKey="scans" stroke="#0057b8" strokeWidth={2} dot={false} />
             </LineChart>
           </ResponsiveContainer>
         </div>

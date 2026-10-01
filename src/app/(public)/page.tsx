@@ -126,7 +126,7 @@ export default async function HomePage() {
       <section id="about" className="relative overflow-hidden bg-navy-950 noise-layer">
         {/* Layered ambient light cones */}
         <div className="pointer-events-none absolute inset-0">
-          <div className="absolute inset-0 bg-[radial-gradient(ellipse_80%_60%_at_50%_0%,rgba(192,138,38,0.22),transparent_70%)]" />
+          <div className="absolute inset-0 bg-[radial-gradient(ellipse_80%_60%_at_50%_0%,rgba(0,114,206,0.22),transparent_70%)]" />
           <div className="absolute inset-0 bg-[radial-gradient(ellipse_60%_50%_at_100%_40%,rgba(58,82,160,0.2),transparent_60%)]" />
           <div className="absolute bottom-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-gold-400/40 to-transparent" />
         </div>
@@ -205,7 +205,7 @@ export default async function HomePage() {
               <div className="flex flex-col gap-3">
                 <Link
                   href="#projects"
-                  className="group flex w-full items-center justify-center gap-2 rounded-full bg-gradient-to-r from-gold-500 via-gold-400 to-amber-400 px-6 py-3.5 text-sm font-bold text-navy-950 shadow-xl shadow-gold-500/25 transition active:scale-95"
+                  className="group flex w-full items-center justify-center gap-2 rounded-full bg-gradient-to-r from-gold-500 via-gold-400 to-gold-400 px-6 py-3.5 text-sm font-bold text-white shadow-xl shadow-gold-500/25 transition active:scale-95"
                 >
                   <span>View Four-Year Record</span>
                   <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" className="transition-transform group-hover:translate-x-1">
@@ -293,7 +293,7 @@ export default async function HomePage() {
                 <div className="flex flex-wrap gap-4 pt-1">
                   <Link
                     href="#projects"
-                    className="group inline-flex items-center gap-2 rounded-full bg-gradient-to-r from-gold-500 to-gold-400 px-7 py-3.5 text-sm font-bold text-navy-950 shadow-lg shadow-gold-500/30 transition-all hover:from-gold-400 hover:to-gold-300 hover:shadow-gold-400/40 hover:-translate-y-0.5"
+                    className="group inline-flex items-center gap-2 rounded-full bg-gradient-to-r from-gold-500 to-gold-400 px-7 py-3.5 text-sm font-bold text-white shadow-lg shadow-gold-500/30 transition-all hover:from-gold-400 hover:to-gold-300 hover:shadow-gold-400/40 hover:-translate-y-0.5"
                   >
                     View the record
                     <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className="transition-transform group-hover:translate-x-1">
@@ -479,7 +479,7 @@ export default async function HomePage() {
                 {timelineByYear.map(([year, yearProjects], index) => (
                   <Reveal key={year} delay={index * 0.06} className="relative">
                     {/* Year dot */}
-                    <div className="absolute -left-6 top-1 flex h-5 w-5 -translate-x-1/2 items-center justify-center rounded-full border-2 border-white bg-gold-500 shadow-[0_0_0_4px_rgba(192,138,38,0.2)] sm:-left-10" />
+                    <div className="absolute -left-6 top-1 flex h-5 w-5 -translate-x-1/2 items-center justify-center rounded-full border-2 border-white bg-gold-500 shadow-[0_0_0_4px_rgba(0,114,206,0.2)] sm:-left-10" />
 
                     <div className="rounded-2xl border border-slate-100 bg-slate-50 p-5 sm:p-6">
                       <p className="font-display text-2xl font-semibold text-navy-900 sm:text-3xl">{year}</p>
@@ -588,7 +588,7 @@ export default async function HomePage() {
         {/* Ambients */}
         <div className="pointer-events-none absolute inset-0">
           <div className="absolute inset-0 bg-[radial-gradient(ellipse_60%_50%_at_80%_50%,rgba(58,82,160,0.25),transparent)]" />
-          <div className="absolute inset-0 bg-[radial-gradient(ellipse_40%_40%_at_20%_70%,rgba(192,138,38,0.1),transparent)]" />
+          <div className="absolute inset-0 bg-[radial-gradient(ellipse_40%_40%_at_20%_70%,rgba(0,114,206,0.1),transparent)]" />
         </div>
 
         <div className="relative mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
@@ -640,7 +640,7 @@ export default async function HomePage() {
                       {/* Progress bar */}
                       <div className="mt-4 h-2 overflow-hidden rounded-full bg-white/10">
                         <div
-                          className="h-full rounded-full bg-gradient-to-r from-gold-500 to-gold-300 shadow-[0_0_8px_rgba(192,138,38,0.5)] transition-all duration-1000"
+                          className="h-full rounded-full bg-gradient-to-r from-gold-500 to-gold-300 shadow-[0_0_8px_rgba(0,114,206,0.5)] transition-all duration-1000"
                           style={{ width: `${Math.min(progress, 100)}%` }}
                         />
                       </div>

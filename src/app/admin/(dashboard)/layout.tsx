@@ -118,7 +118,7 @@ export default async function AdminLayout({ children }: { children: React.ReactN
         {/* ── Desktop Sidebar ── */}
         <aside className="fixed inset-y-0 left-0 z-20 hidden w-64 flex-col bg-navy-950 lg:flex noise-layer">
           {/* Sidebar gradient accent */}
-          <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_80%_40%_at_50%_0%,rgba(192,138,38,0.12),transparent)]" />
+          <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_80%_40%_at_50%_0%,rgba(0,114,206,0.12),transparent)]" />
 
           {/* Brand */}
           <div className="relative p-6 pb-5">

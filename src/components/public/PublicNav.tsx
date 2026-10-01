@@ -57,7 +57,7 @@ export default async function PublicNav() {
           <div className="flex items-center gap-3">
             <Link
               href="/#fundraising"
-              className="hidden rounded-full bg-gradient-to-r from-gold-500 to-gold-400 px-5 py-2 text-sm font-bold text-navy-950 shadow-md shadow-gold-500/25 transition hover:from-gold-400 hover:to-gold-300 hover:shadow-gold-400/40 md:block"
+              className="hidden rounded-full bg-gradient-to-r from-gold-500 to-gold-400 px-5 py-2 text-sm font-bold text-white shadow-md shadow-gold-500/25 transition hover:from-gold-400 hover:to-gold-300 hover:shadow-gold-400/40 md:block"
             >
               Support the work
             </Link>

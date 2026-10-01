@@ -42,7 +42,7 @@ export default async function PublicFooter() {
   return (
     <footer className="relative overflow-hidden bg-navy-950 noise-layer">
       {/* Ambient gradient */}
-      <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_at_bottom_left,rgba(192,138,38,0.12),transparent_55%)]" />
+      <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_at_bottom_left,rgba(0,114,206,0.12),transparent_55%)]" />
 
       <div className="relative mx-auto max-w-7xl px-4 pt-16 pb-10 sm:px-6 lg:px-8">
         {/* Top grid */}

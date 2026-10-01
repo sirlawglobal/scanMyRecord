@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
+import Spinner from "@/components/ui/Spinner";
 import { registrationSchema } from "@/lib/validation/registration.schema";
 
 export default function RegisterForm({ programmeSlug }: { programmeSlug: string }) {
@@ -130,7 +131,14 @@ export default function RegisterForm({ programmeSlug }: { programmeSlug: string 
         disabled={isSubmitting}
         className="w-full rounded-full bg-navy-900 px-6 py-3 text-sm font-semibold text-white shadow-elevated transition hover:bg-navy-800 disabled:cursor-not-allowed disabled:opacity-60"
       >
-        {isSubmitting ? "Submitting..." : "Submit registration"}
+        {isSubmitting ? (
+          <span className="flex items-center justify-center gap-2">
+            <Spinner size={16} light label="Submitting" />
+            Submitting...
+          </span>
+        ) : (
+          "Submit registration"
+        )}
       </button>
     </form>
   );

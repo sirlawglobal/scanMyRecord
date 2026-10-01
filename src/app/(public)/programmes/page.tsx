@@ -24,7 +24,7 @@ export default async function ProgrammesPage({
     <main>
       {/* Page header — cinematic dark hero strip */}
       <section className="relative overflow-hidden bg-navy-950 noise-layer py-16 sm:py-20">
-        <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_70%_60%_at_5%_50%,rgba(192,138,38,0.14),transparent)]" />
+        <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_70%_60%_at_5%_50%,rgba(0,114,206,0.14),transparent)]" />
         <div className="relative mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
           <Reveal>
             <p className="text-[11px] font-bold uppercase tracking-[0.28em] text-gold-400">Community Empowerment</p>
@@ -66,7 +66,7 @@ export default async function ProgrammesPage({
                   href={`/programmes?category=${encodeURIComponent(cat)}`}
                   className={`rounded-full px-4 py-1.5 text-xs font-semibold transition ${
                     isSelected
-                      ? "bg-gold-500 text-navy-950 shadow-sm"
+                      ? "bg-gold-500 text-white shadow-sm"
                       : "bg-slate-100 text-slate-600 hover:bg-slate-200"
                   }`}
                 >

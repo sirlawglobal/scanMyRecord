@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import Spinner from "@/components/ui/Spinner";
 
 export default function AdminLoginPage() {
   const router = useRouter();
@@ -45,7 +46,7 @@ export default function AdminLoginPage() {
       <div className="relative hidden overflow-hidden lg:flex lg:w-1/2 lg:flex-col lg:justify-between noise-layer">
         {/* Gradients */}
         <div className="pointer-events-none absolute inset-0">
-          <div className="absolute inset-0 bg-[radial-gradient(ellipse_80%_70%_at_20%_30%,rgba(192,138,38,0.22),transparent)]" />
+          <div className="absolute inset-0 bg-[radial-gradient(ellipse_80%_70%_at_20%_30%,rgba(0,114,206,0.22),transparent)]" />
           <div className="absolute inset-0 bg-[radial-gradient(ellipse_60%_60%_at_80%_80%,rgba(58,82,160,0.3),transparent)]" />
         </div>
 
@@ -204,14 +205,11 @@ export default function AdminLoginPage() {
             <button
               type="submit"
               disabled={loading}
-              className="group relative w-full overflow-hidden rounded-2xl bg-gradient-to-r from-gold-500 to-gold-400 py-4 text-sm font-bold text-navy-950 shadow-lg shadow-gold-500/30 transition hover:from-gold-400 hover:to-gold-300 disabled:opacity-60"
+              className="group relative w-full overflow-hidden rounded-2xl bg-gradient-to-r from-gold-500 to-gold-400 py-4 text-sm font-bold text-white shadow-lg shadow-gold-500/30 transition hover:from-gold-400 hover:to-gold-300 disabled:opacity-60"
             >
               {loading ? (
                 <span className="flex items-center justify-center gap-2">
-                  <svg className="h-4 w-4 animate-spin" viewBox="0 0 24 24" fill="none">
-                    <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
-                    <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
-                  </svg>
+                  <Spinner size={16} light label="Signing in" />
                   Signing in…
                 </span>
               ) : (

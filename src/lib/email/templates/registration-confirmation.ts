@@ -60,8 +60,8 @@ Scan My Record — Public Civic Accountability Platform
   <style>
     body { margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; background-color: #f1f5f9; color: #1e293b; }
     .container { max-width: 600px; margin: 30px auto; background-color: #ffffff; border-radius: 16px; overflow: hidden; box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.08); }
-    .header { background-color: #060c1a; padding: 32px 24px; text-align: center; color: #ffffff; background-image: radial-gradient(ellipse at 50% 0%, rgba(192, 138, 38, 0.25), transparent); }
-    .logo-badge { display: inline-block; padding: 6px 14px; background: rgba(192, 138, 38, 0.15); border: 1px solid rgba(192, 138, 38, 0.35); border-radius: 20px; font-size: 11px; font-weight: bold; letter-spacing: 0.2em; text-transform: uppercase; color: #f2d98a; margin-bottom: 12px; }
+    .header { background-color: #0057b8; padding: 32px 24px; text-align: center; color: #ffffff; background-image: radial-gradient(ellipse at 50% 0%, rgba(255, 255, 255, 0.18), transparent); }
+    .logo-badge { display: inline-block; padding: 6px 14px; background: rgba(255, 255, 255, 0.15); border: 1px solid rgba(255, 255, 255, 0.35); border-radius: 20px; font-size: 11px; font-weight: bold; letter-spacing: 0.2em; text-transform: uppercase; color: #d4eafc; margin-bottom: 12px; }
     .header-title { margin: 0; font-size: 24px; font-weight: 700; color: #ffffff; letter-spacing: -0.02em; }
     .header-sub { margin-top: 6px; font-size: 13px; color: #94a3b8; }
     .body { padding: 32px 24px; }
@@ -69,14 +69,14 @@ Scan My Record — Public Civic Accountability Platform
     .lead-text { font-size: 14px; line-height: 1.6; color: #475569; margin-bottom: 24px; }
     .reference-box { background-color: #fdf8ec; border: 2px dashed #d97706; border-radius: 12px; padding: 20px; text-align: center; margin-bottom: 24px; }
     .reference-label { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.15em; color: #92400e; margin: 0; }
-    .reference-code { font-family: 'Courier New', Courier, monospace; font-size: 28px; font-weight: 800; color: #060c1a; margin: 8px 0 0 0; letter-spacing: 0.1em; }
+    .reference-code { font-family: 'Courier New', Courier, monospace; font-size: 28px; font-weight: 800; color: #0057b8; margin: 8px 0 0 0; letter-spacing: 0.1em; }
     .details-table { width: 100%; border-collapse: collapse; margin-bottom: 24px; }
     .details-table td { padding: 12px 14px; font-size: 13px; border-bottom: 1px solid #f1f5f9; }
     .details-table td:first-child { font-weight: 600; color: #64748b; width: 35%; }
     .details-table td:last-child { color: #0f172a; font-weight: 500; }
-    .instructions { background-color: #f8fafc; border-left: 4px solid #060c1a; border-radius: 0 8px 8px 0; padding: 14px 16px; margin-bottom: 28px; font-size: 13px; color: #475569; line-height: 1.5; }
+    .instructions { background-color: #f8fafc; border-left: 4px solid #0057b8; border-radius: 0 8px 8px 0; padding: 14px 16px; margin-bottom: 28px; font-size: 13px; color: #475569; line-height: 1.5; }
     .btn-container { text-align: center; margin-bottom: 24px; }
-    .btn { display: inline-block; padding: 12px 28px; background-color: #060c1a; color: #ffffff !important; text-decoration: none; border-radius: 50px; font-size: 13px; font-weight: 700; box-shadow: 0 4px 12px rgba(6, 12, 26, 0.25); }
+    .btn { display: inline-block; padding: 12px 28px; background-color: #0057b8; color: #ffffff !important; text-decoration: none; border-radius: 50px; font-size: 13px; font-weight: 700; box-shadow: 0 4px 12px rgba(0, 87, 184, 0.25); }
     .footer { background-color: #f8fafc; border-top: 1px solid #e2e8f0; padding: 24px; text-align: center; font-size: 12px; color: #94a3b8; line-height: 1.5; }
     .footer-politician { font-weight: 600; color: #475569; margin-bottom: 4px; }
   </style>

@@ -200,7 +200,7 @@ export default async function AdminDashboardPage() {
 
       {/* View public profile CTA */}
       <section className="relative overflow-hidden rounded-3xl bg-navy-950 p-7 noise-layer">
-        <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_60%_60%_at_80%_50%,rgba(192,138,38,0.15),transparent)]" />
+        <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_60%_60%_at_80%_50%,rgba(0,114,206,0.15),transparent)]" />
         <div className="relative flex flex-wrap items-center justify-between gap-5">
           <div>
             <p className="text-[11px] font-bold uppercase tracking-[0.22em] text-gold-400">Public record</p>
@@ -211,7 +211,7 @@ export default async function AdminDashboardPage() {
             href="/"
             target="_blank"
             rel="noopener noreferrer"
-            className="inline-flex items-center gap-2 rounded-2xl bg-gradient-to-r from-gold-500 to-gold-400 px-6 py-3 text-sm font-bold text-navy-950 shadow-lg shadow-gold-500/25 transition hover:from-gold-400 hover:to-gold-300"
+            className="inline-flex items-center gap-2 rounded-2xl bg-gradient-to-r from-gold-500 to-gold-400 px-6 py-3 text-sm font-bold text-white shadow-lg shadow-gold-500/25 transition hover:from-gold-400 hover:to-gold-300"
           >
             View public page
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">

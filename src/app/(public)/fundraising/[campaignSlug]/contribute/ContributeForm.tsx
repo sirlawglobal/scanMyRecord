@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import Spinner from "@/components/ui/Spinner";
 
 const EMAIL_PATTERN = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
@@ -90,7 +91,7 @@ export default function ContributeForm({ campaignSlug }: { campaignSlug: string 
               }}
               className={`rounded-full px-4 py-2 text-sm font-semibold transition ${
                 selectedAmount === amount && !customAmount
-                  ? "bg-gold-500 text-navy-950 shadow-sm"
+                  ? "bg-gold-500 text-white shadow-sm"
                   : "border border-slate-300 bg-white text-slate-700 hover:border-slate-400"
               }`}
             >
@@ -178,10 +179,7 @@ export default function ContributeForm({ campaignSlug }: { campaignSlug: string 
       >
         {isSubmitting ? (
           <>
-            <svg className="h-4 w-4 animate-spin text-white" fill="none" viewBox="0 0 24 24">
-              <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
-              <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8H4z" />
-            </svg>
+            <Spinner size={16} light label="Connecting to Paystack" />
             <span>Connecting to Paystack...</span>
           </>
         ) : (

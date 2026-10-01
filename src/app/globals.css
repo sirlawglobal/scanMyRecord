@@ -10,13 +10,19 @@
   --font-display: "Fraunces", var(--font-fraunces), "Georgia", serif;
   --font-mono: var(--font-geist-mono), "SFMono-Regular", monospace;
 
-  /* Navy — civic authority */
-  --color-navy-950: #060c1a;
-  --color-navy-900: #0d1528;
-  --color-navy-800: #162040;
-  --color-navy-700: #1f2d58;
-  --color-navy-600: #2a3d72;
-  --color-navy-500: #3a52a0;
+  /* Primary blue #0057B8 (navy-900). Class names are kept from the earlier
+     navy palette so every existing utility picks up the brand colour. */
+  --color-navy-950: #002a5e;
+  --color-navy-900: #0057b8;
+  --color-navy-800: #00489a;
+  --color-navy-700: #0063c8;
+  --color-navy-600: #0072ce;
+  --color-navy-500: #2b8be0;
+  --color-navy-400: #5aa3e6;
+  --color-navy-300: #8fc0ef;
+  --color-navy-200: #bcd8f5;
+  --color-navy-100: #dbeafa;
+  --color-navy-50:  #eef5fd;
 
   /* Slate neutrals */
   --color-slate-50:  #f8fafc;
@@ -30,15 +36,17 @@
   --color-slate-800: #1e293b;
   --color-slate-900: #0f172a;
 
-  /* Gold — civic warmth / CTA accent */
-  --color-gold-50:  #fdf8ec;
-  --color-gold-100: #f9edcc;
-  --color-gold-200: #f2d98a;
-  --color-gold-300: #e8c14e;
-  --color-gold-400: #d9a734;
-  --color-gold-500: #c08a26;
-  --color-gold-600: #9c6c1a;
-  --color-gold-700: #7a5214;
+  /* Secondary blue #0072CE (gold-500) — accent / CTA. Names kept from the
+     earlier gold palette so existing utilities pick up the brand colour. */
+  --color-gold-50:  #eef7fe;
+  --color-gold-100: #d4eafc;
+  --color-gold-200: #a6d2f7;
+  --color-gold-300: #8cc8f6;
+  --color-gold-400: #62b2f0;
+  --color-gold-500: #0072ce;
+  --color-gold-600: #005fae;
+  --color-gold-700: #004a8a;
+  --color-gold-800: #003a6e;
 
   /* Status colours */
   --color-completed: #16a34a;
@@ -46,15 +54,15 @@
   --color-proposed:  #4f46e5;
 
   /* Brand (admin accents) */
-  --color-brand-500: #0b63f5;
-  --color-brand-600: #084ec4;
+  --color-brand-500: #0057b8;
+  --color-brand-600: #00489a;
 
   /* Shadows */
   --shadow-glass:      0 8px 32px rgba(6, 12, 26, 0.12), 0 1px 2px rgba(6, 12, 26, 0.08);
   --shadow-elevated:   0 1px 2px rgba(6, 12, 26, 0.04), 0 12px 28px -8px rgba(6, 12, 26, 0.14);
   --shadow-elevated-lg: 0 4px 6px rgba(6, 12, 26, 0.06), 0 24px 48px -12px rgba(6, 12, 26, 0.22);
-  --shadow-gold:        0 0 0 1px rgba(192, 138, 38, 0.3), 0 8px 24px rgba(192, 138, 38, 0.2);
-  --shadow-glow-gold:   0 0 40px rgba(192, 138, 38, 0.25);
+  --shadow-gold:        0 0 0 1px rgba(0, 114, 206, 0.3), 0 8px 24px rgba(0, 114, 206, 0.2);
+  --shadow-glow-gold:   0 0 40px rgba(0, 114, 206, 0.25);
 }
 
 /* ─────────────────────────────────────────────────────────────
@@ -68,9 +76,9 @@
 
 @media (prefers-color-scheme: dark) {
   :root {
-    --background: #060c1a;
+    --background: #00183a;
     --foreground: #e2e8f0;
-    --surface:    #0d1528;
+    --surface:    #002a5e;
   }
 }
 
@@ -131,14 +139,14 @@ body {
    Gradient text utility
 ───────────────────────────────────────────────────────────── */
 .text-gradient-gold {
-  background: linear-gradient(135deg, #e8c14e 0%, #c08a26 60%, #d9a734 100%);
+  background: linear-gradient(135deg, #8cc8f6 0%, #0072ce 60%, #62b2f0 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
 }
 
 .text-gradient-navy {
-  background: linear-gradient(135deg, #3a52a0 0%, #162040 100%);
+  background: linear-gradient(135deg, #2b8be0 0%, #00489a 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
@@ -158,7 +166,7 @@ body {
   inset: 0;
   border-radius: inherit;
   padding: 1px;
-  background: linear-gradient(135deg, rgba(216, 167, 52, 0.6), rgba(192, 138, 38, 0.1), rgba(216, 167, 52, 0.4));
+  background: linear-gradient(135deg, rgba(98, 178, 240, 0.6), rgba(0, 114, 206, 0.1), rgba(98, 178, 240, 0.4));
   -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
   -webkit-mask-composite: xor;
   mask-composite: exclude;
@@ -184,8 +192,8 @@ body {
 }
 
 @keyframes pulse-gold {
-  0%, 100% { box-shadow: 0 0 0 0 rgba(192, 138, 38, 0.4); }
-  50%       { box-shadow: 0 0 0 8px rgba(192, 138, 38, 0); }
+  0%, 100% { box-shadow: 0 0 0 0 rgba(0, 114, 206, 0.4); }
+  50%       { box-shadow: 0 0 0 8px rgba(0, 114, 206, 0); }
 }
 
 @keyframes float {
@@ -208,7 +216,7 @@ body {
 .animate-pulse-gold { animation: pulse-gold 2s ease-in-out infinite; }
 
 .shimmer-text {
-  background: linear-gradient(90deg, #e8c14e 0%, #fff5d0 40%, #e8c14e 80%);
+  background: linear-gradient(90deg, #8cc8f6 0%, #e6f3fd 40%, #8cc8f6 80%);
   background-size: 200% auto;
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
@@ -248,7 +256,7 @@ body {
    Focus ring
 ───────────────────────────────────────────────────────────── */
 :focus-visible {
-  outline: 2px solid rgba(192, 138, 38, 0.7);
+  outline: 2px solid rgba(0, 114, 206, 0.7);
   outline-offset: 3px;
   border-radius: 4px;
 }
@@ -269,7 +277,7 @@ body {
   transform: translateY(-50%);
   width: 3px;
   height: 60%;
-  background: linear-gradient(180deg, #d9a734, #c08a26);
+  background: linear-gradient(180deg, #62b2f0, #0072ce);
   border-radius: 0 2px 2px 0;
 }
 
@@ -280,7 +288,7 @@ body {
   position: fixed;
   inset: 0;
   z-index: 50;
-  background: rgba(6, 12, 26, 0.7);
+  background: rgba(0, 24, 58, 0.7);
   backdrop-filter: blur(4px);
 }
 
@@ -289,8 +297,34 @@ body {
   top: 0;
   left: 0;
   right: 0;
-  background: rgba(13, 21, 40, 0.98);
-  border-bottom: 1px solid rgba(217, 167, 52, 0.2);
+  background: rgba(0, 42, 94, 0.98);
+  border-bottom: 1px solid rgba(98, 178, 240, 0.2);
   padding: 1rem 1.25rem 1.5rem;
   backdrop-filter: blur(24px);
+}
+
+/* ─────────────────────────────────────────────────────────────
+   Brand spinner (see components/ui/Spinner.tsx)
+───────────────────────────────────────────────────────────── */
+@keyframes brand-spin {
+  to { transform: rotate(360deg); }
+}
+
+.brand-spinner {
+  display: inline-block;
+  border-radius: 9999px;
+  border: 3px solid rgba(0, 87, 184, 0.18);
+  border-top-color: #0057b8;
+  border-right-color: #0072ce;
+  animation: brand-spin 0.8s linear infinite;
+}
+
+.brand-spinner-light {
+  border-color: rgba(255, 255, 255, 0.3);
+  border-top-color: #ffffff;
+  border-right-color: #ffffff;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .brand-spinner { animation-duration: 2s; }
 }

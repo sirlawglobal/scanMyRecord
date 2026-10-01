@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import Spinner from "@/components/ui/Spinner";
 
 export type ProjectMediaItem = {
   url: string;
@@ -286,7 +287,14 @@ export function ProjectMediaManager({ value, onChange }: ProjectMediaManagerProp
       ) : null}
 
       <label className="flex cursor-pointer items-center justify-center rounded-xl border-2 border-dashed border-slate-300 px-3 py-6 text-sm font-medium text-slate-600 transition hover:border-navy-900 hover:text-navy-900">
-        {isUploading ? "Uploading..." : "Click to upload photos or short video clips"}
+        {isUploading ? (
+          <span className="flex items-center gap-2">
+            <Spinner size={18} label="Uploading" />
+            Uploading...
+          </span>
+        ) : (
+          "Click to upload photos or short video clips"
+        )}
         <input
           type="file"
           accept="image/jpeg,image/png,image/webp,video/mp4,video/webm,video/quicktime"

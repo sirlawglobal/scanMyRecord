@@ -69,7 +69,7 @@ export default function MobileNavToggle({ links }: { links: NavLink[] }) {
               <Link
                 href="/#fundraising"
                 onClick={() => setOpen(false)}
-                className="flex w-full items-center justify-center gap-2 rounded-full bg-gradient-to-r from-gold-500 to-gold-400 px-5 py-3.5 text-sm font-bold text-navy-950 shadow-lg shadow-gold-500/20 transition hover:from-gold-400 hover:to-gold-300"
+                className="flex w-full items-center justify-center gap-2 rounded-full bg-gradient-to-r from-gold-500 to-gold-400 px-5 py-3.5 text-sm font-bold text-white shadow-lg shadow-gold-500/20 transition hover:from-gold-400 hover:to-gold-300"
               >
                 Support the work
               </Link>
