@@ -35,7 +35,7 @@ export function AnalyticsCharts({ data }: { data: AnalyticsPoint[] }) {
               <XAxis dataKey="date" tick={{ fontSize: 12 }} stroke="#94a3b8" />
               <YAxis allowDecimals={false} tick={{ fontSize: 12 }} stroke="#94a3b8" />
               <Tooltip />
-              <Line type="monotone" dataKey="registrations" stroke="#0f1729" strokeWidth={2} dot={false} />
+              <Line type="monotone" dataKey="registrations" stroke="#0072ce" strokeWidth={2} dot={false} />
             </LineChart>
           </ResponsiveContainer>
         </div>
