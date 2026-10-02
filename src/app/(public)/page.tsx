@@ -138,7 +138,7 @@ export default async function HomePage() {
           <div className="flex flex-col items-center text-center lg:hidden space-y-6">
             {/* Top Eyebrow Badge */}
             <Reveal>
-              <div className="inline-flex items-center gap-2 rounded-full border border-gold-400/30 bg-gold-400/10 px-3.5 py-1.5 text-[10px] font-bold uppercase tracking-[0.22em] text-gold-300 backdrop-blur-md shadow-lg shadow-gold-500/10">
+              <div className="inline-flex items-center gap-2 rounded-full border border-gold-400/30 bg-gold-400/10 px-3.5 py-1.5 text-[10px] font-bold uppercase tracking-[0.22em] text-gold-200 backdrop-blur-md shadow-lg shadow-gold-500/10">
                 <span className="h-2 w-2 animate-ping rounded-full bg-emerald-400" />
                 <span>Citizen Accountability Record</span>
               </div>
@@ -178,11 +178,11 @@ export default async function HomePage() {
                 <h1 className="font-display text-4xl sm:text-5xl font-bold tracking-tight text-white">
                   {profile.name}
                 </h1>
-                <p className="text-base sm:text-lg font-semibold text-gold-300">
+                <p className="text-base sm:text-lg font-semibold text-gold-200">
                   {profile.office}
                 </p>
                 <div className="inline-flex items-center gap-1.5 rounded-full bg-white/[0.06] border border-white/10 px-3.5 py-1 text-xs text-slate-300 font-medium">
-                  <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" className="text-gold-400">
+                  <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" className="text-gold-200">
                     <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z" />
                     <circle cx="12" cy="10" r="3" />
                   </svg>
@@ -231,7 +231,7 @@ export default async function HomePage() {
                   >
                     <div className="flex items-center justify-between">
                       <span className="text-lg">{stat.icon}</span>
-                      <span className="text-[9px] font-bold uppercase tracking-wider text-gold-400/80">
+                      <span className="text-[9px] font-bold uppercase tracking-wider text-gold-200">
                         {stat.detail}
                       </span>
                     </div>
@@ -240,7 +240,7 @@ export default async function HomePage() {
                         value={stat.value}
                         className="font-display text-2xl sm:text-3xl font-bold text-white tracking-tight"
                       />
-                      <p className="mt-1 text-[10px] font-semibold uppercase tracking-[0.14em] text-slate-400">
+                      <p className="mt-1 text-[10px] font-semibold uppercase tracking-[0.14em] text-slate-200">
                         {stat.label}
                       </p>
                     </div>
@@ -258,7 +258,7 @@ export default async function HomePage() {
             <div className="flex flex-col justify-center space-y-8">
               {/* Eyebrow badge */}
               <Reveal>
-                <div className="inline-flex w-fit items-center gap-2 rounded-full border border-gold-400/25 bg-gold-400/8 px-4 py-2 text-[11px] font-bold uppercase tracking-[0.25em] text-gold-300">
+                <div className="inline-flex w-fit items-center gap-2 rounded-full border border-gold-400/25 bg-gold-400/8 px-4 py-2 text-[11px] font-bold uppercase tracking-[0.25em] text-gold-200">
                   <span className="h-2 w-2 animate-pulse rounded-full bg-gold-400" />
                   Public accountability record
                 </div>
@@ -270,9 +270,9 @@ export default async function HomePage() {
                   <h1 className="font-display text-5xl font-semibold leading-[1.05] tracking-tight text-white xl:text-7xl">
                     {profile.name}
                   </h1>
-                  <p className="text-xl font-semibold text-gold-300">{profile.office}</p>
-                  <p className="flex items-center gap-2 text-sm uppercase tracking-[0.22em] text-slate-400">
-                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="shrink-0 text-gold-400">
+                  <p className="text-xl font-semibold text-gold-200">{profile.office}</p>
+                  <p className="flex items-center gap-2 text-sm uppercase tracking-[0.22em] text-slate-200">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="shrink-0 text-gold-200">
                       <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z" />
                       <circle cx="12" cy="10" r="3" />
                     </svg>
@@ -321,7 +321,7 @@ export default async function HomePage() {
                         value={stat.value}
                         className="font-display text-3xl font-semibold text-white sm:text-4xl"
                       />
-                      <p className="text-[10px] font-semibold uppercase tracking-[0.18em] text-slate-400">
+                      <p className="text-[10px] font-semibold uppercase tracking-[0.18em] text-slate-200">
                         {stat.label}
                       </p>
                     </div>
@@ -352,7 +352,7 @@ export default async function HomePage() {
 
                   {/* Floating info chip */}
                   <div className="absolute bottom-5 left-5 right-5 flex items-center gap-3 rounded-2xl border border-white/10 bg-navy-950/80 p-3.5 backdrop-blur-md">
-                    <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-gold-400/20 text-gold-300">
+                    <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-gold-400/20 text-gold-200">
                       <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
                         <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14" />
                         <polyline points="22 4 12 14.01 9 11.01" />
@@ -360,7 +360,7 @@ export default async function HomePage() {
                     </div>
                     <div className="min-w-0">
                       <p className="truncate text-xs font-semibold text-white">{profile.name}</p>
-                      <p className="truncate text-[10px] text-slate-400">{profile.office}</p>
+                      <p className="truncate text-[10px] text-slate-200">{profile.office}</p>
                     </div>
                     <div className="ml-auto shrink-0">
                       <span className="flex items-center gap-1 rounded-full bg-emerald-500/15 px-2.5 py-1 text-[10px] font-bold text-emerald-400">
@@ -593,17 +593,17 @@ export default async function HomePage() {
 
         <div className="relative mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
           <Reveal>
-            <p className="text-[11px] font-bold uppercase tracking-[0.28em] text-gold-400">Fundraising</p>
+            <p className="text-[11px] font-bold uppercase tracking-[0.28em] text-gold-200">Fundraising</p>
             <h2 className="mt-2 font-display text-3xl font-semibold text-white sm:text-4xl">
               Support active community drives
             </h2>
-            <p className="mt-2 text-sm text-slate-400">Your contribution powers real change on the ground.</p>
+            <p className="mt-2 text-sm text-slate-200">Your contribution powers real change on the ground.</p>
           </Reveal>
 
           {activeCampaigns.length === 0 ? (
             <div className="mt-10 flex flex-col items-center gap-4 rounded-3xl border border-white/10 bg-white/[0.04] p-16 text-center">
               <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-white/[0.06] text-2xl">💰</div>
-              <p className="text-slate-400">No active fundraising campaigns are available yet.</p>
+              <p className="text-slate-200">No active fundraising campaigns are available yet.</p>
             </div>
           ) : (
             <div className="mt-10 grid gap-6 md:grid-cols-2">
@@ -622,14 +622,14 @@ export default async function HomePage() {
                       {/* Title + active chip */}
                       <div className="flex flex-wrap items-start justify-between gap-3">
                         <h3 className="font-display text-xl font-semibold text-white">{campaign.title}</h3>
-                        <span className="flex items-center gap-1.5 rounded-full bg-gold-400/10 px-2.5 py-1 text-[10px] font-bold uppercase tracking-wide text-gold-400">
+                        <span className="flex items-center gap-1.5 rounded-full bg-gold-400/10 px-2.5 py-1 text-[10px] font-bold uppercase tracking-wide text-gold-200">
                           <span className="h-1 w-1 animate-pulse rounded-full bg-gold-400" />
                           Active
                         </span>
                       </div>
 
                       {/* Amount */}
-                      <p className="mt-4 text-sm text-slate-400">
+                      <p className="mt-4 text-sm text-slate-200">
                         <span className="text-lg font-bold text-white">
                           ₦{campaign.raisedAmount.toLocaleString()}
                         </span>
@@ -645,9 +645,9 @@ export default async function HomePage() {
                         />
                       </div>
 
-                      <div className="mt-3 flex items-center justify-between text-xs text-slate-500">
+                      <div className="mt-3 flex items-center justify-between text-xs text-slate-200">
                         <span>{Math.round(progress)}% funded</span>
-                        <span className="flex items-center gap-1 text-gold-400 opacity-0 transition group-hover:opacity-100">
+                        <span className="flex items-center gap-1 text-gold-200 opacity-0 transition group-hover:opacity-100">
                           Contribute now
                           <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
                             <path d="M5 12h14M12 5l7 7-7 7" />

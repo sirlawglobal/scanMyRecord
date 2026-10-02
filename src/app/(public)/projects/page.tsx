@@ -52,11 +52,11 @@ export default async function ProjectsPage({
         <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_70%_60%_at_5%_50%,rgba(0,114,206,0.14),transparent)]" />
         <div className="relative mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
           <Reveal>
-            <p className="text-[11px] font-bold uppercase tracking-[0.28em] text-gold-400">Projects</p>
+            <p className="text-[11px] font-bold uppercase tracking-[0.28em] text-gold-200">Projects</p>
             <h1 className="mt-3 font-display text-4xl font-semibold text-white sm:text-5xl">
               Delivered and planned projects
             </h1>
-            <p className="mt-3 max-w-xl text-base text-slate-400">
+            <p className="mt-3 max-w-xl text-base text-slate-200">
               A transparent, verifiable record of all constituency projects — past, present, and future.
             </p>
           </Reveal>

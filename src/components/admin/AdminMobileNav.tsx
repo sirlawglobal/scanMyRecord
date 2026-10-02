@@ -138,12 +138,12 @@ export function AdminMobileNav() {
       <div className="flex h-16 items-center justify-between border-b border-slate-200 bg-navy-950 px-4 text-white">
         <Link href="/admin/dashboard" className="flex items-center gap-2.5">
           <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-gradient-to-br from-gold-400 to-gold-600 shadow-md shadow-gold-500/20">
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" className="text-navy-950">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" className="text-white">
               <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" />
             </svg>
           </span>
           <div>
-            <p className="text-[9px] font-bold uppercase tracking-[0.25em] text-gold-400">Scan My Record</p>
+            <p className="text-[9px] font-bold uppercase tracking-[0.25em] text-gold-200">Scan My Record</p>
             <p className="font-display text-xs font-semibold text-white">Admin Control</p>
           </div>
         </Link>
@@ -190,7 +190,7 @@ export function AdminMobileNav() {
         <div className="flex h-16 items-center justify-between border-b border-white/10 px-5">
           <div className="flex items-center gap-2.5">
             <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-lg bg-gradient-to-br from-gold-400 to-gold-600">
-              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" className="text-navy-950">
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" className="text-white">
                 <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" />
               </svg>
             </span>
@@ -200,7 +200,7 @@ export function AdminMobileNav() {
             type="button"
             onClick={() => setIsOpen(false)}
             aria-label="Close menu"
-            className="rounded-lg p-1.5 text-slate-400 hover:bg-white/10 hover:text-white"
+            className="rounded-lg p-1.5 text-slate-200 hover:bg-white/10 hover:text-white"
           >
             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
               <line x1="18" y1="6" x2="6" y2="18" />
@@ -220,11 +220,11 @@ export function AdminMobileNav() {
                 onClick={() => setIsOpen(false)}
                 className={`flex items-center gap-3 rounded-xl px-3.5 py-3 text-sm font-medium transition ${
                   isActive
-                    ? "bg-gold-500/15 text-gold-300 font-semibold border border-gold-500/30"
+                    ? "bg-gold-500/15 text-gold-200 font-semibold border border-gold-500/30"
                     : "text-slate-300 hover:bg-white/5 hover:text-white"
                 }`}
               >
-                <span className={`shrink-0 ${isActive ? "text-gold-400" : "text-slate-400"}`}>
+                <span className={`shrink-0 ${isActive ? "text-gold-200" : "text-slate-200"}`}>
                   {item.icon}
                 </span>
                 {item.label}

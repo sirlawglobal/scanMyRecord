@@ -203,9 +203,9 @@ export default async function AdminDashboardPage() {
         <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_60%_60%_at_80%_50%,rgba(0,114,206,0.15),transparent)]" />
         <div className="relative flex flex-wrap items-center justify-between gap-5">
           <div>
-            <p className="text-[11px] font-bold uppercase tracking-[0.22em] text-gold-400">Public record</p>
+            <p className="text-[11px] font-bold uppercase tracking-[0.22em] text-gold-200">Public record</p>
             <h3 className="mt-1 font-display text-xl font-semibold text-white">See how your record looks publicly</h3>
-            <p className="mt-1 text-sm text-slate-400">Preview exactly what constituents see when they scan your QR code.</p>
+            <p className="mt-1 text-sm text-slate-200">Preview exactly what constituents see when they scan your QR code.</p>
           </div>
           <a
             href="/"

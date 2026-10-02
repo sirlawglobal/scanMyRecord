@@ -54,12 +54,12 @@ export default function AdminLoginPage() {
         <div className="relative z-10 p-10">
           <div className="flex items-center gap-3">
             <span className="flex h-10 w-10 items-center justify-center rounded-xl bg-gradient-to-br from-gold-400 to-gold-600 shadow-lg shadow-gold-500/40">
-              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" className="text-navy-950">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" className="text-white">
                 <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" />
               </svg>
             </span>
             <div>
-              <p className="text-[10px] font-bold uppercase tracking-[0.28em] text-gold-400/70">
+              <p className="text-[10px] font-bold uppercase tracking-[0.28em] text-gold-200">
                 Scan My Record
               </p>
               <p className="font-display text-base font-semibold text-white">Admin Portal</p>
@@ -72,14 +72,14 @@ export default function AdminLoginPage() {
           <div className="space-y-6 text-center">
             {/* Icon decoration */}
             <div className="mx-auto flex h-20 w-20 items-center justify-center rounded-3xl border border-gold-400/20 bg-gold-400/5">
-              <svg width="36" height="36" viewBox="0 0 24 24" fill="none" className="text-gold-400">
+              <svg width="36" height="36" viewBox="0 0 24 24" fill="none" className="text-gold-200">
                 <path d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
               </svg>
             </div>
             <blockquote className="font-display text-2xl font-semibold italic text-white/90 leading-relaxed">
               "One scan.<br />Four years of impact."
             </blockquote>
-            <p className="text-sm text-slate-400">
+            <p className="text-sm text-slate-200">
               Manage your public accountability record — projects, programmes, fundraising, and more.
             </p>
           </div>
@@ -95,7 +95,7 @@ export default function AdminLoginPage() {
             ].map((item) => (
               <div key={item.label} className="rounded-2xl border border-white/[0.06] bg-white/[0.03] p-3">
                 <p className="text-xl">{item.icon}</p>
-                <p className="mt-1 text-xs font-medium text-slate-400">{item.label}</p>
+                <p className="mt-1 text-xs font-medium text-slate-200">{item.label}</p>
               </div>
             ))}
           </div>
@@ -107,7 +107,7 @@ export default function AdminLoginPage() {
         {/* Mobile brand (visible < lg) */}
         <div className="mb-10 flex items-center gap-3 lg:hidden">
           <span className="flex h-9 w-9 items-center justify-center rounded-xl bg-gradient-to-br from-gold-400 to-gold-600">
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" className="text-navy-950">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" className="text-white">
               <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" />
             </svg>
           </span>
@@ -117,9 +117,9 @@ export default function AdminLoginPage() {
         <div className="w-full max-w-md">
           {/* Heading */}
           <div className="mb-8">
-            <p className="text-[11px] font-bold uppercase tracking-[0.26em] text-gold-400">Admin access</p>
+            <p className="text-[11px] font-bold uppercase tracking-[0.26em] text-gold-200">Admin access</p>
             <h1 className="mt-3 font-display text-4xl font-semibold text-white">Sign in</h1>
-            <p className="mt-2 text-sm text-slate-400">
+            <p className="mt-2 text-sm text-slate-200">
               Authorised personnel only. Configure credentials in your environment.
             </p>
           </div>
@@ -127,11 +127,11 @@ export default function AdminLoginPage() {
           <form onSubmit={handleSubmit} className="space-y-5">
             {/* Email */}
             <div>
-              <label className="mb-2 block text-xs font-semibold uppercase tracking-[0.18em] text-slate-400">
+              <label className="mb-2 block text-xs font-semibold uppercase tracking-[0.18em] text-slate-200">
                 Email address
               </label>
               <div className="relative">
-                <div className="pointer-events-none absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-500">
+                <div className="pointer-events-none absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-200">
                   <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                     <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z" />
                     <polyline points="22,6 12,13 2,6" />
@@ -143,18 +143,18 @@ export default function AdminLoginPage() {
                   onChange={(e) => setEmail(e.target.value)}
                   placeholder="admin@yourdomain.com"
                   autoComplete="email"
-                  className="w-full rounded-2xl border border-white/[0.08] bg-white/[0.05] py-3.5 pl-11 pr-4 text-sm text-white placeholder:text-slate-600 transition focus:border-gold-400/50 focus:bg-white/[0.08] focus:outline-none"
+                  className="w-full rounded-2xl border border-white/[0.08] bg-white/[0.05] py-3.5 pl-11 pr-4 text-sm text-white placeholder:text-slate-200 transition focus:border-gold-400/50 focus:bg-white/[0.08] focus:outline-none"
                 />
               </div>
             </div>
 
             {/* Password */}
             <div>
-              <label className="mb-2 block text-xs font-semibold uppercase tracking-[0.18em] text-slate-400">
+              <label className="mb-2 block text-xs font-semibold uppercase tracking-[0.18em] text-slate-200">
                 Password
               </label>
               <div className="relative">
-                <div className="pointer-events-none absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-500">
+                <div className="pointer-events-none absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-200">
                   <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                     <rect x="3" y="11" width="18" height="11" rx="2" ry="2" />
                     <path d="M7 11V7a5 5 0 0 1 10 0v4" />
@@ -166,12 +166,12 @@ export default function AdminLoginPage() {
                   onChange={(e) => setPassword(e.target.value)}
                   placeholder="Enter your admin password"
                   autoComplete="current-password"
-                  className="w-full rounded-2xl border border-white/[0.08] bg-white/[0.05] py-3.5 pl-11 pr-12 text-sm text-white placeholder:text-slate-600 transition focus:border-gold-400/50 focus:bg-white/[0.08] focus:outline-none"
+                  className="w-full rounded-2xl border border-white/[0.08] bg-white/[0.05] py-3.5 pl-11 pr-12 text-sm text-white placeholder:text-slate-200 transition focus:border-gold-400/50 focus:bg-white/[0.08] focus:outline-none"
                 />
                 <button
                   type="button"
                   onClick={() => setShowPassword((v) => !v)}
-                  className="absolute right-3.5 top-1/2 -translate-y-1/2 text-slate-500 transition hover:text-slate-300"
+                  className="absolute right-3.5 top-1/2 -translate-y-1/2 text-slate-200 transition hover:text-slate-300"
                   aria-label={showPassword ? "Hide password" : "Show password"}
                 >
                   {showPassword ? (

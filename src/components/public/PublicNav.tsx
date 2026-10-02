@@ -26,12 +26,12 @@ export default async function PublicNav() {
           <Link href="/" className="group flex items-center gap-3">
             {/* Icon mark */}
             <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-gradient-to-br from-gold-400 to-gold-600 shadow-lg shadow-gold-500/30 transition group-hover:shadow-gold-500/50">
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" className="text-navy-950">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" className="text-white">
                 <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" />
               </svg>
             </span>
             <span className="flex flex-col leading-none">
-              <span className="text-[9px] font-bold uppercase tracking-[0.3em] text-gold-400/80">
+              <span className="text-[9px] font-bold uppercase tracking-[0.3em] text-gold-200">
                 {appName}
               </span>
               <span className="font-display text-base font-semibold text-white">

@@ -540,7 +540,7 @@ export function OutboxViewer() {
                   />
                 </div>
               ) : (
-                <pre className="rounded-xl border border-slate-300 bg-navy-950 p-4 font-mono text-xs text-gold-300 overflow-x-auto">
+                <pre className="rounded-xl border border-slate-300 bg-navy-950 p-4 font-mono text-xs text-gold-200 overflow-x-auto">
                   {JSON.stringify(previewData.item, null, 2)}
                 </pre>
               )}

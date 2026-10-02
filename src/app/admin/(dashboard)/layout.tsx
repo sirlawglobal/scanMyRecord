@@ -124,12 +124,12 @@ export default async function AdminLayout({ children }: { children: React.ReactN
           <div className="relative p-6 pb-5">
             <div className="flex items-center gap-3">
               <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-gradient-to-br from-gold-400 to-gold-600 shadow-md shadow-gold-500/30">
-                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" className="text-navy-950">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" className="text-white">
                   <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" />
                 </svg>
               </span>
               <div>
-                <p className="text-[9px] font-bold uppercase tracking-[0.3em] text-gold-400/60">
+                <p className="text-[9px] font-bold uppercase tracking-[0.3em] text-gold-200">
                   Scan My Record
                 </p>
                 <p className="font-display text-sm font-semibold text-white">Admin</p>
@@ -144,9 +144,9 @@ export default async function AdminLayout({ children }: { children: React.ReactN
               <Link
                 key={item.href}
                 href={item.href}
-                className="admin-nav-item flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium text-slate-400 transition-all hover:bg-white/[0.06] hover:text-white"
+                className="admin-nav-item flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium text-slate-200 transition-all hover:bg-white/[0.06] hover:text-white"
               >
-                <span className="shrink-0 text-slate-500 transition-colors group-hover:text-gold-400">
+                <span className="shrink-0 text-slate-200 transition-colors group-hover:text-gold-200">
                   {item.icon}
                 </span>
                 {item.label}
