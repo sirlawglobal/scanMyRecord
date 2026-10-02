@@ -55,7 +55,7 @@ export async function POST(request: Request) {
         slug,
         summary: summary ?? "",
         category,
-        status: status ?? "proposed",
+        status: status ?? "ongoing",
         year,
         location: location ?? "",
         media,

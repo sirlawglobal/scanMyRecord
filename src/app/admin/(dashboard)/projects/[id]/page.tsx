@@ -34,7 +34,7 @@ export default async function AdminEditProjectPage({
     title: String(project.title ?? ""),
     summary: String(project.summary ?? ""),
     category: String(project.category ?? "Healthcare"),
-    status: String(project.status ?? "proposed"),
+    status: project.status === "completed" ? "completed" : "ongoing",
     year: project.year ? Number(project.year) : undefined,
     location: String(project.location ?? ""),
     media:

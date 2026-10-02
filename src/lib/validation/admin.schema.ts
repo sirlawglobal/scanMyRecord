@@ -32,7 +32,7 @@ const mediaItemSchema = z.object({
   caption: text(300, "Media caption").optional(),
 });
 
-export const PROJECT_STATUSES = ["completed", "ongoing", "proposed"] as const;
+export const PROJECT_STATUSES = ["completed", "ongoing"] as const;
 export const PROGRAMME_STATUSES = ["active", "paused", "closed"] as const;
 
 const blankToUndefined = (value: unknown) => (value === "" || value === null ? undefined : value);
@@ -46,7 +46,7 @@ const projectFields = {
   category: requiredText(80, "Category"),
   status: z.preprocess(
     (value) => (typeof value === "string" ? value.trim().toLowerCase() : blankToUndefined(value)),
-    z.enum(PROJECT_STATUSES, { error: "Status must be completed, ongoing or proposed." }).optional(),
+    z.enum(PROJECT_STATUSES, { error: "Status must be completed or ongoing." }).optional(),
   ),
   year: z.preprocess(
     blankToUndefined,

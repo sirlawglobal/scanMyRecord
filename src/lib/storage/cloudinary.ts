@@ -50,7 +50,3 @@ async function uploadToCloudinary(
 export async function uploadImage(file: Buffer, filename: string): Promise<{ url: string }> {
   return uploadToCloudinary(file, filename, "image");
 }
-
-export async function uploadVideo(file: Buffer, filename: string): Promise<{ url: string }> {
-  return uploadToCloudinary(file, filename, "video");
-}

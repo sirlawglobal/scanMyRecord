@@ -8,13 +8,11 @@ import { DeleteActionButton } from "@/components/admin/DeleteActionButton";
 const STATUS_LABELS: Record<string, string> = {
   completed: "Completed",
   ongoing: "Ongoing",
-  proposed: "Proposed",
 };
 
 const STATUS_CLASSES: Record<string, string> = {
   completed: "bg-green-100 text-green-700",
   ongoing: "bg-amber-100 text-amber-700",
-  proposed: "bg-indigo-100 text-indigo-700",
 };
 
 export default async function AdminProjectsPage() {

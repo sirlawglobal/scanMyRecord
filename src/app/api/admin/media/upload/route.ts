@@ -1,11 +1,9 @@
 import { NextResponse } from "next/server";
 import { getSession } from "@/lib/auth/session";
-import { uploadImage, uploadVideo } from "@/lib/storage/cloudinary";
+import { uploadImage } from "@/lib/storage/cloudinary";
 
 const ALLOWED_IMAGE_TYPES = ["image/jpeg", "image/png", "image/webp"];
-const ALLOWED_VIDEO_TYPES = ["video/mp4", "video/webm", "video/quicktime"];
 const MAX_IMAGE_SIZE = 5 * 1024 * 1024;
-const MAX_VIDEO_SIZE = 100 * 1024 * 1024;
 
 export async function POST(request: Request) {
   const session = await getSession();
@@ -21,21 +19,20 @@ export async function POST(request: Request) {
     return NextResponse.json({ message: "A file is required." }, { status: 400 });
   }
 
-  const isVideo = ALLOWED_VIDEO_TYPES.includes(file.type);
-  const isImage = ALLOWED_IMAGE_TYPES.includes(file.type);
-
-  if (!isVideo && !isImage) {
+  if (file.type.startsWith("video/")) {
     return NextResponse.json(
-      { message: "Unsupported file type. Use JPEG, PNG, WEBP images or MP4, WEBM, MOV video clips." },
+      { message: "Videos are uploaded directly from the browser, not through this endpoint." },
       { status: 400 },
     );
   }
 
-  const maxSize = isVideo ? MAX_VIDEO_SIZE : MAX_IMAGE_SIZE;
+  if (!ALLOWED_IMAGE_TYPES.includes(file.type)) {
+    return NextResponse.json({ message: "Unsupported file type. Use JPEG, PNG or WEBP images." }, { status: 400 });
+  }
 
-  if (file.size > maxSize) {
+  if (file.size > MAX_IMAGE_SIZE) {
     return NextResponse.json(
-      { message: `File is too large. Maximum size is ${Math.round(maxSize / (1024 * 1024))}MB.` },
+      { message: `File is too large. Maximum size is ${Math.round(MAX_IMAGE_SIZE / (1024 * 1024))}MB.` },
       { status: 400 },
     );
   }
@@ -50,20 +47,11 @@ export async function POST(request: Request) {
       process.env.CLOUDINARY_API_SECRET?.trim()
     ) {
       try {
-        const { url } = isVideo ? await uploadVideo(buffer, file.name) : await uploadImage(buffer, file.name);
-        return NextResponse.json({ url, type: isVideo ? "video" : "image" }, { status: 201 });
+        const { url } = await uploadImage(buffer, file.name);
+        return NextResponse.json({ url, type: "image" }, { status: 201 });
       } catch {
         // Fall back to local storage if Cloudinary fails
       }
-    }
-
-    if (isVideo) {
-      // Local disk storage isn't viable for video in most deployment targets
-      // (serverless filesystems are ephemeral) — require Cloudinary for video.
-      return NextResponse.json(
-        { message: "Video uploads require Cloudinary to be configured (CLOUDINARY_* env vars)." },
-        { status: 500 },
-      );
     }
 
     // Local filesystem storage fallback in /public/uploads/

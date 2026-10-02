@@ -8,7 +8,6 @@ const STATUS_FILTERS: { value: string; label: string; dot?: string }[] = [
   { value: "", label: "All" },
   { value: "completed", label: "Completed", dot: "bg-emerald-400" },
   { value: "ongoing", label: "Ongoing", dot: "bg-amber-400" },
-  { value: "proposed", label: "Proposed", dot: "bg-indigo-400" },
 ];
 
 function buildFilterHref(

@@ -89,10 +89,9 @@ export function ProjectForm() {
 
         <label className="block text-sm font-medium text-slate-700">
           Status
-          <select name="status" defaultValue="Proposed" className="mt-2 w-full rounded-xl border border-slate-200 px-3 py-2.5">
+          <select name="status" defaultValue="Ongoing" className="mt-2 w-full rounded-xl border border-slate-200 px-3 py-2.5">
             <option value="Completed">Completed</option>
             <option value="Ongoing">Ongoing</option>
-            <option value="Proposed">Proposed</option>
           </select>
         </label>
       </div>

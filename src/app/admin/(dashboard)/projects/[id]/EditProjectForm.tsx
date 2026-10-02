@@ -114,7 +114,6 @@ export function EditProjectForm({ project }: { project: ProjectData }) {
           >
             <option value="Completed">Completed</option>
             <option value="Ongoing">Ongoing</option>
-            <option value="Proposed">Proposed</option>
           </select>
         </label>
       </div>

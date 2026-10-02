@@ -1,4 +1,4 @@
-type ProjectStatus = "completed" | "ongoing" | "proposed";
+type ProjectStatus = "completed" | "ongoing";
 
 const STATUS_CONFIG: Record<
   ProjectStatus,
@@ -18,17 +18,10 @@ const STATUS_CONFIG: Record<
       "bg-amber-500/10 text-amber-400 border border-amber-500/20 shadow-[0_0_12px_rgba(245,158,11,0.12)]",
     dotClass: "bg-amber-400 animate-pulse",
   },
-  proposed: {
-    label: "Proposed",
-    icon: "○",
-    className:
-      "bg-indigo-500/10 text-indigo-400 border border-indigo-500/20 shadow-[0_0_12px_rgba(99,102,241,0.12)]",
-    dotClass: "bg-indigo-400",
-  },
 };
 
 export default function ProjectStatusBadge({ status }: { status: ProjectStatus }) {
-  const config = STATUS_CONFIG[status] ?? STATUS_CONFIG.proposed;
+  const config = STATUS_CONFIG[status] ?? STATUS_CONFIG.ongoing;
 
   return (
     <span

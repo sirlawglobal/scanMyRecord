@@ -15,7 +15,7 @@ type ProjectMediaManagerProps = {
   onChange: (media: ProjectMediaItem[]) => void;
 };
 
-const MAX_VIDEO_SECONDS = 60 * 60;
+const MAX_VIDEO_SECONDS = 2 * 60 * 60;
 
 const STAGE_LABELS: Record<ProjectMediaItem["stage"], string> = {
   before: "Before",
@@ -36,15 +36,20 @@ type UploadResponse = { ok: boolean; body: UploadBody };
 function postWithProgress(
   url: string,
   formData: FormData,
-  onProgress: (percent: number) => void,
+  onProgress: (loaded: number, total: number) => void,
+  headers: Record<string, string> = {},
 ): Promise<UploadResponse> {
   return new Promise((resolve, reject) => {
     const xhr = new XMLHttpRequest();
     xhr.open("POST", url);
 
+    for (const [name, value] of Object.entries(headers)) {
+      xhr.setRequestHeader(name, value);
+    }
+
     xhr.upload.onprogress = (event) => {
       if (event.lengthComputable) {
-        onProgress(Math.min(100, Math.round((event.loaded / event.total) * 100)));
+        onProgress(event.loaded, event.total);
       }
     };
     xhr.onload = () => {
@@ -62,11 +67,37 @@ function postWithProgress(
   });
 }
 
-const MAX_VIDEO_BYTES = 100 * 1024 * 1024;
+const MAX_VIDEO_BYTES = 1024 * 1024 * 1024;
+// Cloudinary requires chunks of at least 5MB (except the last one).
+const CHUNK_BYTES = 20 * 1024 * 1024;
+const CHUNK_RETRIES = 3;
 const ALLOWED_VIDEO_TYPES = ["video/mp4", "video/webm", "video/quicktime"];
 
+async function signUpload() {
+  const response = await fetch("/api/admin/media/sign", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ resourceType: "video" }),
+  });
+  const sign = await response.json().catch(() => ({}));
+
+  if (!response.ok) {
+    throw new Error(sign?.message ?? "Could not authorise the video upload.");
+  }
+
+  return sign as { cloudName: string; apiKey: string; timestamp: number; signature: string };
+}
+
+function uploadId() {
+  return typeof crypto !== "undefined" && "randomUUID" in crypto
+    ? crypto.randomUUID()
+    : `${Date.now()}-${Math.random().toString(16).slice(2)}`;
+}
+
 // Videos go straight from the browser to Cloudinary: Vercel rejects request
-// bodies over ~4.5MB, so they cannot be proxied through our own API.
+// bodies over ~4.5MB, so they cannot be proxied through our own API. Large
+// files are sent in chunks (Cloudinary chunked upload) so a 1GB file never
+// needs a single giant request and a dropped connection only repeats one chunk.
 async function uploadVideoDirect(
   file: File,
   onProgress: (percent: number) => void,
@@ -76,37 +107,73 @@ async function uploadVideoDirect(
   }
 
   if (file.size > MAX_VIDEO_BYTES) {
-    throw new Error(`"${file.name}" is too large. Maximum video size is 100MB.`);
+    throw new Error(`"${file.name}" is too large. Maximum video size is 1GB.`);
   }
 
-  const signResponse = await fetch("/api/admin/media/sign", {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ resourceType: "video" }),
-  });
-  const sign = await signResponse.json().catch(() => ({}));
+  const id = uploadId();
+  const chunked = file.size > CHUNK_BYTES;
+  let offset = 0;
+  let last: UploadBody = {};
 
-  if (!signResponse.ok) {
-    throw new Error(sign?.message ?? "Could not authorise the video upload.");
+  while (offset < file.size) {
+    const end = Math.min(offset + CHUNK_BYTES, file.size);
+    const start = offset;
+    let attempt = 0;
+
+    for (;;) {
+      try {
+        // A fresh signature per chunk: signatures expire after an hour and a
+        // 1GB upload on a slow connection can take longer than that.
+        const sign = await signUpload();
+
+        const formData = new FormData();
+        formData.append("file", chunked ? file.slice(start, end) : file, file.name);
+        formData.append("api_key", sign.apiKey);
+        formData.append("timestamp", String(sign.timestamp));
+        formData.append("signature", sign.signature);
+
+        const headers: Record<string, string> = chunked
+          ? { "X-Unique-Upload-Id": id, "Content-Range": `bytes ${start}-${end - 1}/${file.size}` }
+          : {};
+
+        const result = await postWithProgress(
+          `https://api.cloudinary.com/v1_1/${sign.cloudName}/video/upload`,
+          formData,
+          (loaded, total) => {
+            const chunkSize = end - start;
+            const sent = Math.min(chunkSize, (loaded / total) * chunkSize);
+            onProgress(Math.min(100, Math.round(((start + sent) / file.size) * 100)));
+          },
+          headers,
+        );
+
+        if (!result.ok) {
+          throw new Error(result.body?.error?.message ?? `Failed to upload "${file.name}" to Cloudinary.`);
+        }
+
+        last = result.body;
+        break;
+      } catch (error) {
+        attempt += 1;
+
+        // Network drops are retried; a rejection from Cloudinary (bad file,
+        // plan limit) would fail identically every time, so it is surfaced.
+        const isNetwork = error instanceof Error && error.message === "Network error during upload.";
+
+        if (!isNetwork || attempt >= CHUNK_RETRIES) {
+          throw error;
+        }
+      }
+    }
+
+    offset = end;
   }
 
-  const formData = new FormData();
-  formData.append("file", file);
-  formData.append("api_key", sign.apiKey);
-  formData.append("timestamp", String(sign.timestamp));
-  formData.append("signature", sign.signature);
-
-  const { ok, body } = await postWithProgress(
-    `https://api.cloudinary.com/v1_1/${sign.cloudName}/video/upload`,
-    formData,
-    onProgress,
-  );
-
-  if (!ok || !body?.secure_url) {
-    throw new Error(body?.error?.message ?? `Failed to upload "${file.name}" to Cloudinary.`);
+  if (!last.secure_url) {
+    throw new Error(`Cloudinary did not return a URL for "${file.name}".`);
   }
 
-  return { url: body.secure_url as string, type: "video" };
+  return { url: last.secure_url, type: "video" };
 }
 
 function readVideoDuration(file: File): Promise<number> {
@@ -154,7 +221,7 @@ export function ProjectMediaManager({ value, onChange }: ProjectMediaManagerProp
           const duration = await readVideoDuration(file).catch(() => 0);
           if (duration > MAX_VIDEO_SECONDS) {
             throw new Error(
-              `"${file.name}" is ${Math.round(duration)}s long. Keep clips under ${MAX_VIDEO_SECONDS / 60} minutes.`,
+              `"${file.name}" is ${Math.round(duration)}s long. Keep clips under 2 hours.`,
             );
           }
         }
@@ -168,7 +235,9 @@ export function ProjectMediaManager({ value, onChange }: ProjectMediaManagerProp
           const formData = new FormData();
           formData.append("file", file);
 
-          const result = await postWithProgress("/api/admin/media/upload", formData, report);
+          const result = await postWithProgress("/api/admin/media/upload", formData, (loaded, total) =>
+            report(Math.round((loaded / total) * 100)),
+          );
 
           data = result.body;
 
@@ -321,7 +390,7 @@ export function ProjectMediaManager({ value, onChange }: ProjectMediaManagerProp
         </div>
       ) : null}
       <p className="mt-1.5 text-xs text-slate-400">
-        Tag each photo as Before / After to power the comparison slider on the public page. Video clips should be under {MAX_VIDEO_SECONDS / 60} minutes and 100MB.
+        Tag each photo as Before / After to power the comparison slider on the public page. Video clips should be under 2 hours and 1GB.
       </p>
 
       {error ? <p className="mt-2 text-sm font-medium text-red-600">{error}</p> : null}

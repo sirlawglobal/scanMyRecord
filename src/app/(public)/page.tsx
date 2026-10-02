@@ -14,7 +14,7 @@ type ProjectSummary = {
   title: string;
   slug: string;
   summary: string;
-  status: "completed" | "ongoing" | "proposed";
+  status: "completed" | "ongoing";
   category: string;
   year: number;
   location: string;
@@ -50,7 +50,7 @@ async function getLandingProjects(): Promise<ProjectSummary[]> {
       title: String(project.title ?? "Untitled project"),
       slug: String(project.slug ?? ""),
       summary: String(project.summary ?? ""),
-      status: (project.status as ProjectSummary["status"]) ?? "proposed",
+      status: project.status === "completed" ? "completed" : "ongoing",
       category: String(project.category ?? ""),
       year: Number(project.year ?? 0),
       location: String(project.location ?? ""),

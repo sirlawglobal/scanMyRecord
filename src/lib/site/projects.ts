@@ -13,7 +13,7 @@ export type PublicProject = {
   title: string;
   slug: string;
   summary: string;
-  status: "completed" | "ongoing" | "proposed";
+  status: "completed" | "ongoing";
   category: string;
   year: number;
   location: string;
@@ -44,7 +44,6 @@ function toMediaItems(project: Record<string, unknown>): ProjectMediaItem[] {
 export type ProjectStats = {
   completed: number;
   ongoing: number;
-  proposed: number;
   categories: string[];
   years: number[];
 };
@@ -63,9 +62,8 @@ function toPublicProject(project: Record<string, unknown>): PublicProject {
     title: String(project.title ?? "Untitled project"),
     slug: String(project.slug ?? ""),
     summary: String(project.summary ?? ""),
-    status: (["completed", "ongoing", "proposed"].includes(String(project.status))
-      ? project.status
-      : "proposed") as PublicProject["status"],
+    // "proposed" was removed as a status; legacy records are shown as ongoing.
+    status: (project.status === "completed" ? "completed" : "ongoing") as PublicProject["status"],
     category: String(project.category ?? ""),
     year: Number(project.year ?? 0),
     location: String(project.location ?? ""),
@@ -84,8 +82,10 @@ export async function getPublicProjectList(filters?: ProjectFilters): Promise<Pu
     await connectToDatabase();
 
     const query: Record<string, unknown> = { archived: { $ne: true } };
-    if (filters?.status) {
-      query.status = filters.status;
+    if (filters?.status === "completed") {
+      query.status = "completed";
+    } else if (filters?.status === "ongoing") {
+      query.status = { $in: ["ongoing", "proposed"] };
     }
     if (filters?.category) {
       query.category = filters.category;
@@ -124,7 +124,7 @@ export async function getPublicProjectBySlug(slug: string): Promise<PublicProjec
 }
 
 export async function getProjectStats(): Promise<ProjectStats> {
-  const emptyStats: ProjectStats = { completed: 0, ongoing: 0, proposed: 0, categories: [], years: [] };
+  const emptyStats: ProjectStats = { completed: 0, ongoing: 0, categories: [], years: [] };
 
   if (!hasValidMongoUri()) {
     return emptyStats;
@@ -134,10 +134,9 @@ export async function getProjectStats(): Promise<ProjectStats> {
     await connectToDatabase();
 
     const notArchived = { archived: { $ne: true } };
-    const [completed, ongoing, proposed, categories, years] = await Promise.all([
+    const [completed, ongoing, categories, years] = await Promise.all([
       Project.countDocuments({ ...notArchived, status: "completed" }),
-      Project.countDocuments({ ...notArchived, status: "ongoing" }),
-      Project.countDocuments({ ...notArchived, status: "proposed" }),
+      Project.countDocuments({ ...notArchived, status: { $in: ["ongoing", "proposed"] } }),
       Project.distinct("category", notArchived),
       Project.distinct("year", notArchived),
     ]);
@@ -145,7 +144,6 @@ export async function getProjectStats(): Promise<ProjectStats> {
     return {
       completed: Number(completed ?? 0),
       ongoing: Number(ongoing ?? 0),
-      proposed: Number(proposed ?? 0),
       categories: (categories as unknown[]).map((category) => String(category)).filter(Boolean).sort(),
       years: (years as unknown[])
         .map((year) => Number(year))
