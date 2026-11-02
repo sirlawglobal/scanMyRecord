@@ -64,16 +64,6 @@ export default function MobileNavToggle({ links }: { links: NavLink[] }) {
                 </Link>
               ))}
             </nav>
-
-            <div className="mt-5 border-t border-white/10 pt-5">
-              <Link
-                href="/#fundraising"
-                onClick={() => setOpen(false)}
-                className="flex w-full items-center justify-center gap-2 rounded-full bg-gradient-to-r from-accent-500 to-accent-400 px-5 py-3.5 text-sm font-bold text-white shadow-lg shadow-accent-500/20 transition hover:from-accent-600 hover:to-accent-500"
-              >
-                Support the work
-              </Link>
-            </div>
           </div>
         </>
       )}

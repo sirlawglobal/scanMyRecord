@@ -8,7 +8,6 @@ const NAV_LINKS = [
   { href: "/#about", label: "About" },
   { href: "/projects", label: "Projects" },
   { href: "/programmes", label: "Programmes" },
-  { href: "/fundraising", label: "Fundraising" },
 ];
 
 export default async function PublicNav() {
@@ -55,12 +54,6 @@ export default async function PublicNav() {
 
           {/* CTA + mobile toggle */}
           <div className="flex items-center gap-3">
-            <Link
-              href="/#fundraising"
-              className="hidden rounded-full bg-gradient-to-r from-accent-500 to-accent-400 px-5 py-2 text-sm font-bold text-white shadow-md shadow-accent-500/25 transition hover:from-accent-600 hover:to-accent-500 hover:shadow-gold-400/40 md:block"
-            >
-              Support the work
-            </Link>
             <MobileNavToggle links={NAV_LINKS} />
           </div>
         </div>

@@ -75,7 +75,6 @@ export default async function PublicFooter() {
               {[
                 { href: "/projects", label: "Projects" },
                 { href: "/programmes", label: "Programmes" },
-                { href: "/fundraising", label: "Fundraising" },
                 { href: "/#timeline", label: "Timeline" },
               ].map((link) => (
                 <Link

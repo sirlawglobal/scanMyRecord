@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { getPublicProfileConfig } from "@/lib/site/public-profile-server";
-import { getPublicProgrammeList, getPublicFundraisingCampaignList } from "@/lib/site/content";
+import { getPublicProgrammeList } from "@/lib/site/content";
 import { connectToDatabase, hasValidMongoUri } from "@/lib/db/connection";
 import Project from "@/models/Project";
 import ProjectCover from "@/components/public/ProjectCover";
@@ -80,11 +80,10 @@ export const dynamic = "force-dynamic";
 export const revalidate = 0;
 
 export default async function HomePage() {
-  const [profile, projects, programmes, campaigns] = await Promise.all([
+  const [profile, projects, programmes] = await Promise.all([
     getPublicProfileConfig(),
     getLandingProjects(),
     getPublicProgrammeList(),
-    getPublicFundraisingCampaignList(),
   ]);
 
   const completedCount = projects.filter((project) => project.status === "completed").length;
@@ -116,7 +115,6 @@ export default async function HomePage() {
   ).sort(([yearA], [yearB]) => Number(yearB) - Number(yearA));
 
   const openProgrammes = programmes.filter((programme) => programme.registrationOpen).slice(0, 3);
-  const activeCampaigns = campaigns.filter((campaign) => campaign.status === "active").slice(0, 2);
 
   return (
     <main>
@@ -576,88 +574,6 @@ export default async function HomePage() {
                   </Link>
                 </Reveal>
               ))}
-            </div>
-          )}
-        </div>
-      </section>
-
-      {/* ──────────────────────────────────────────────────────────────
-          FUNDRAISING
-      ────────────────────────────────────────────────────────────── */}
-      <section id="fundraising" className="relative overflow-hidden bg-navy-950 py-20 noise-layer">
-        {/* Ambients */}
-        <div className="pointer-events-none absolute inset-0">
-          <div className="absolute inset-0 bg-[radial-gradient(ellipse_60%_50%_at_80%_50%,rgba(58,82,160,0.25),transparent)]" />
-          <div className="absolute inset-0 bg-[radial-gradient(ellipse_40%_40%_at_20%_70%,rgba(0,114,206,0.1),transparent)]" />
-        </div>
-
-        <div className="relative mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-          <Reveal>
-            <p className="text-[11px] font-bold uppercase tracking-[0.28em] text-gold-200">Fundraising</p>
-            <h2 className="mt-2 font-display text-3xl font-semibold text-white sm:text-4xl">
-              Support active community drives
-            </h2>
-            <p className="mt-2 text-sm text-slate-200">Your contribution powers real change on the ground.</p>
-          </Reveal>
-
-          {activeCampaigns.length === 0 ? (
-            <div className="mt-10 flex flex-col items-center gap-4 rounded-3xl border border-white/10 bg-white/[0.04] p-16 text-center">
-              <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-white/[0.06] text-2xl">💰</div>
-              <p className="text-slate-200">No active fundraising campaigns are available yet.</p>
-            </div>
-          ) : (
-            <div className="mt-10 grid gap-6 md:grid-cols-2">
-              {activeCampaigns.map((campaign, index) => {
-                const progress =
-                  campaign.targetAmount > 0
-                    ? (campaign.raisedAmount / campaign.targetAmount) * 100
-                    : 0;
-
-                return (
-                  <Reveal key={campaign._id} delay={index * 0.06}>
-                    <Link
-                      href={`/fundraising/${campaign.slug}`}
-                      className="group block rounded-3xl border border-white/[0.08] bg-white/[0.04] p-7 transition hover:border-gold-400/30 hover:bg-white/[0.07]"
-                    >
-                      {/* Title + active chip */}
-                      <div className="flex flex-wrap items-start justify-between gap-3">
-                        <h3 className="font-display text-xl font-semibold text-white">{campaign.title}</h3>
-                        <span className="flex items-center gap-1.5 rounded-full bg-gold-400/10 px-2.5 py-1 text-[10px] font-bold uppercase tracking-wide text-gold-200">
-                          <span className="h-1 w-1 animate-pulse rounded-full bg-gold-400" />
-                          Active
-                        </span>
-                      </div>
-
-                      {/* Amount */}
-                      <p className="mt-4 text-sm text-slate-200">
-                        <span className="text-lg font-bold text-white">
-                          ₦{campaign.raisedAmount.toLocaleString()}
-                        </span>
-                        {" "}raised of{" "}
-                        <span className="text-slate-300">₦{campaign.targetAmount.toLocaleString()}</span>
-                      </p>
-
-                      {/* Progress bar */}
-                      <div className="mt-4 h-2 overflow-hidden rounded-full bg-white/10">
-                        <div
-                          className="h-full rounded-full bg-gradient-to-r from-gold-500 to-gold-300 shadow-[0_0_8px_rgba(0,114,206,0.5)] transition-all duration-1000"
-                          style={{ width: `${Math.min(progress, 100)}%` }}
-                        />
-                      </div>
-
-                      <div className="mt-3 flex items-center justify-between text-xs text-slate-200">
-                        <span>{Math.round(progress)}% funded</span>
-                        <span className="flex items-center gap-1 text-gold-200 opacity-0 transition group-hover:opacity-100">
-                          Contribute now
-                          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-                            <path d="M5 12h14M12 5l7 7-7 7" />
-                          </svg>
-                        </span>
-                      </div>
-                    </Link>
-                  </Reveal>
-                );
-              })}
             </div>
           )}
         </div>
